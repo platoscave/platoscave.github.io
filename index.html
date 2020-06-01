@@ -30,10 +30,12 @@
     </head>
     <body>
         
-        <script src='three.js/build/three.js'></script>
-        <script src='three.js/examples/js/controls/OrbitControls.js'></script>
 
         <script>
+            import * as THREE from "https://cdn.jsdelivr.net/npm/three@v0.108.0/build/three.module.js";
+            import {OrbitControls} from "https://cdn.jsdelivr.net/npm/three@v0.108.0/examples/jsm/controls/OrbitControls.js";
+
+
             var scene, renderer, camera, controls, cube;
         
             init();
