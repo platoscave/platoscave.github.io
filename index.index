@@ -1,48 +1,48 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Three.js Boilerplate</title>
+< !DOCTYPE html >
+    <html>
+        <head>
+            <title>Three.js Boilerplate</title>
 
-        <!--This is important to get a correct canvas size on mobile-->
-        <meta name='viewport' content='width=device-width, user-scalable=no'/>
+            <!--This is important to get a correct canvas size on mobile-->
+        <meta name='viewport' content='width=device-width, user-scalable=no' />
 
-        <style>
-            body{
-                margin:0;
+            <style>
+                body{
+                    margin:0;
                 overflow:hidden;
             }
 
             /*
-              Next 2 paragraphs are a good practice. 
+              Next 2 paragraphs are a good practice.
               In IE/Edge you have to provide the cursor images.
             */
             canvas{
-                cursor:grab;
+                    cursor:grab;
                 cursor:-webkit-grab;
                 cursor:-moz-grab;
             }
             canvas:active{
-                cursor:grabbing;
+                    cursor:grabbing;
                 cursor:-webkit-grabbing;
                 cursor:-moz-grabbing;
             }
         </style>
-    </head>
-    <body>
-        
-
+        </head>
+        <body>
+		<script src="https://rawgit.com/mrdoob/three.js/dev/build/three.js"></script>
+		<script src="https://rawgit.com/mrdoob/three.js/dev/examples/js/libs/jszip.min.js"></script>
         <script>
-            import * as THREE from "https://cdn.jsdelivr.net/npm/three@v0.108.0/build/three.module.js";
-            import {OrbitControls} from "https://cdn.jsdelivr.net/npm/three@v0.108.0/examples/jsm/controls/OrbitControls.js";
+            //import * as THREE from "https://cdn.jsdelivr.net/npm/three@v0.108.0/build/three.module.js";
+            // import {OrbitControls} from "https://cdn.jsdelivr.net/npm/three@v0.108.0/examples/jsm/controls/OrbitControls.js";
 
 
             var scene, renderer, camera, controls, cube;
-        
+
             init();
 
             function init () {
-                renderer = new THREE.WebGLRenderer();
-                
+                    renderer = new THREE.WebGLRenderer();
+
                 //this is to get the correct pixel detail on portable devices
                 renderer.setPixelRatio( window.devicePixelRatio );
 
@@ -52,7 +52,7 @@
 
                 scene = new THREE.Scene();
 
-                camera = new THREE.PerspectiveCamera( 
+                camera = new THREE.PerspectiveCamera(
                     70,                                         //FOV
                     window.innerWidth / window.innerHeight,     //aspect
                     1,                                          //near clipping plane
@@ -81,12 +81,12 @@
             }
 
             function animate () {
-                requestAnimationFrame( animate );
+                    requestAnimationFrame(animate);
                 controls.update();
                 renderer.render( scene, camera );
-                
+
                 cube.rotation.x += 0.01;
             }
         </script>
-    </body>
-</html>
+        </body>
+    </html>
