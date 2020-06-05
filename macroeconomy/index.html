@@ -1,91 +1,45 @@
-< !DOCTYPE html >
-    <html>
-        <head>
-            <title>Three.js Macroeconomic Model</title>
+<!DOCTYPE html>
+<html>
 
-            <!--This is important to get a correct canvas size on mobile-->
-        <meta name='viewport' content='width=device-width, user-scalable=no' />
+<head>
+    <title>Three.js Macroeconomic Model</title>
 
-            <style>
-                body{
-                    margin:0;
-                overflow:hidden;
-            }
+    <!--This is important to get a correct canvas size on mobile-->
+    <meta name='viewport' content='width=device-width, user-scalable=no' />
 
-            /*
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /*
               Next 2 paragraphs are a good practice.
               In IE/Edge you have to provide the cursor images.
             */
-            canvas{
-                    cursor:grab;
-                cursor:-webkit-grab;
-                cursor:-moz-grab;
-            }
-            canvas:active{
-                    cursor:grabbing;
-                cursor:-webkit-grabbing;
-                cursor:-moz-grabbing;
-            }
-        </style>
-        </head>
-        <body>
+        canvas {
+            cursor: grab;
+            cursor: -webkit-grab;
+            cursor: -moz-grab;
+        }
 
-        <script  type="module">
-            import * as THREE from "https://cdn.jsdelivr.net/npm/three@v0.108.0/build/three.module.js";
-            import {OrbitControls} from "https://cdn.jsdelivr.net/npm/three@v0.108.0/examples/jsm/controls/OrbitControls.js";
+        canvas:active {
+            cursor: grabbing;
+            cursor: -webkit-grabbing;
+            cursor: -moz-grabbing;
+        }
+    </style>
+</head>
 
+<body>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js"></script> -->
+    <script type="module">
 
-            var scene, renderer, camera, controls, cube;
+        import MacroeconomyModel from  "./macroeconomyModel.js";
+        new MacroeconomyModel()
 
-            init();
+    </script>
 
-            function init () {
-                    renderer = new THREE.WebGLRenderer();
+</body>
 
-                //this is to get the correct pixel detail on portable devices
-                renderer.setPixelRatio( window.devicePixelRatio );
-
-                //and this sets the canvas' size.
-                renderer.setSize( window.innerWidth, window.innerHeight );
-                document.body.appendChild( renderer.domElement );
-
-                scene = new THREE.Scene();
-
-                camera = new THREE.PerspectiveCamera(
-                    70,                                         //FOV
-                    window.innerWidth / window.innerHeight,     //aspect
-                    1,                                          //near clipping plane
-                    100                                         //far clipping plane
-                );
-                camera.position.set( 1, 3, 5 );
-
-                controls = new OrbitControls( camera, renderer.domElement );
-                controls.rotateSpeed = .07;
-                controls.enableDamping = true;
-                controls.dampingFactor = .05;
-
-                window.addEventListener( 'resize', function () {
-                    camera.aspect = window.innerWidth / window.innerHeight;
-                    camera.updateProjectionMatrix();
-                    renderer.setSize( window.innerWidth, window.innerHeight );
-                }, false );
-
-                cube = new THREE.Mesh(
-                    new THREE.BoxGeometry( 1, 1, 1 ),
-                    new THREE.MeshBasicMaterial()
-                   );
-                scene.add( cube );
-
-                animate();
-            }
-
-            function animate () {
-                    requestAnimationFrame(animate);
-                controls.update();
-                renderer.render( scene, camera );
-
-                cube.rotation.x += 0.01;
-            }
-        </script>
-        </body>
-    </html>
+</html>
