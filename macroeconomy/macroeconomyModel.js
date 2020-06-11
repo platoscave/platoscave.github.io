@@ -1,20 +1,48 @@
 "use strict";
 
+//import TWEEN from "../lib/tween.js/src/Tween.js";
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@v0.108.0/build/three.module.js";
+//import * as TWEEN  from "https://cdn.jsdelivr.net/npm/es6-tween";
+// import TWEEN from "https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js";
 import Scene from  "../lib/scene.js";
 import { Water } from "https://cdn.jsdelivr.net/npm/three@v0.108.0/examples/jsm/objects/Water2.js";
+
+const WIDTH = 400;
+const HEIGHT = 200;
+const DEPTH = 200;
+
+const IDLEBALANCES = new THREE.Vector3( WIDTH * 1.25, HEIGHT * 2.5, 0)
+const FOREIGNBALANCES = new THREE.Vector3( WIDTH * 1.25, - HEIGHT * 2.5, 0)
+const TANSACTIONBALANCES = new THREE.Vector3(0, - HEIGHT * 5, 0)
 
 export default class MacoeconomyModel extends Scene {
 
     constructor( ) {
         super()
-        this.macroEconomicModel()
+
+    }
+
+    init() {
+        let macroEconomicModelObject3d = this.macroEconomicModel()
+        this.getScene().add(macroEconomicModelObject3d)
+
+
+        let chestahedron = this.getChestahedron()
+        chestahedron.position.set(0, HEIGHT * 10, 0)
+        //chestahedron.scale.set(5, 5, 5)
+        this.getScene().add(chestahedron)
+
+
+
+        /* let textMesh = this.makeLabel()
+        textMesh.position.z = - 150;
+        this.getScene().add(textMesh); */
     }
 
     macroEconomicModel() {
 
         let macroEconomicModelObject3d = new THREE.Object3D();
-        scene.add(macroEconomicModelObject3d);
+        //scene.add(macroEconomicModelObject3d);
   
         let transBalObj3d = this.getTankObject3D('Transaction Balances')
         transBalObj3d.position.set(TANSACTIONBALANCES.x, TANSACTIONBALANCES.y, TANSACTIONBALANCES.z)
@@ -74,7 +102,7 @@ export default class MacoeconomyModel extends Scene {
         taxPipeObject3D.position.set(0, IDLEBALANCES.y, 0)
         macroEconomicModelObject3d.add(taxPipeObject3D);
   
-        // Cone
+        return macroEconomicModelObject3d
   
    
       }
@@ -113,7 +141,8 @@ export default class MacoeconomyModel extends Scene {
         let tankMesh = new THREE.Mesh(tankGeometry, materials);
   
         tankObject3d.add(tankMesh);
-        this.selectableMeshArr.push(tankMesh)
+        this.pushSelectableMeshArr(tankMesh)
+
   
   
   
@@ -431,11 +460,11 @@ export default class MacoeconomyModel extends Scene {
         waterTween.onUpdate(obj => {
           // console.log('tx', obj.tx)
           // set the marker position
-          pt = curve.getPoint(obj.tx);
+          pt = curve.getPoint(obj);
           coneMesh.position.set(pt.x, pt.y, pt.z);
   
           // get the tangent to the curve
-          tangent = curve.getTangent(obj.tx).normalize();
+          tangent = curve.getTangent(obj).normalize();
   
           // calculate the axis to rotate around
           axis.crossVectors(up, tangent).normalize();

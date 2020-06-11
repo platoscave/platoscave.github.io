@@ -32,11 +32,13 @@
 </head>
 
 <body>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js"></script> -->
+    <!-- <script  type="module" src="https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
     <script type="module">
 
         import MacroeconomyModel from  "./macroeconomyModel.js";
-        new MacroeconomyModel()
+        const model = new MacroeconomyModel()
+        model.init()
 
     </script>
 
