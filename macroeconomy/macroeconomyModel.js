@@ -1,11 +1,11 @@
 "use strict";
 
 //import TWEEN from "../lib/tween.js/src/Tween.js";
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@v0.108.0/build/three.module.js";
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.module.js";
 //import * as TWEEN  from "https://cdn.jsdelivr.net/npm/es6-tween";
 // import TWEEN from "https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js";
 import Scene from  "../lib/scene.js";
-import { Water } from "https://cdn.jsdelivr.net/npm/three@v0.108.0/examples/jsm/objects/Water2.js";
+import { Water } from "https://cdn.jsdelivr.net/npm/three@0.117.1/examples/jsm/objects/Water2.js";
 
 const WIDTH = 400;
 const HEIGHT = 200;
@@ -197,6 +197,8 @@ export default class MacoeconomyModel extends Scene {
   
         // water surface https://github.com/mrdoob/three.js/blob/master/examples/webgl_water.html
         // and https://jsfiddle.net/6ym08593/
+
+        // TODO https://threejs.org/examples/?q=water#webgl_shaders_ocean
   
         let textureLoader = new THREE.TextureLoader();
         let waterSurfaceGeometry = new THREE.PlaneBufferGeometry(WIDTH, DEPTH);
