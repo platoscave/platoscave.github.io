@@ -15,6 +15,8 @@ const IDLEBALANCES = new THREE.Vector3(WIDTH * 1.25, HEIGHT * 2.5, 0)
 const FOREIGNBALANCES = new THREE.Vector3(WIDTH * 1.25, - HEIGHT * 2.5, 0)
 const TANSACTIONBALANCES = new THREE.Vector3(0, - HEIGHT * 5, 0)
 
+let font, textMat, backgroundMat
+
 export default class BlockchainModel extends Scene {
 
     constructor() {
@@ -27,10 +29,10 @@ export default class BlockchainModel extends Scene {
 
         const pipeMaterial = new THREE.MeshPhongMaterial({color: 0xe0e0e0 });
         let chestahedronMesh = new THREE.Mesh(this.makeChestahedronGeom(), pipeMaterial)
-        //chestahedronMesh.position.set(0, HEIGHT * 10, 0)
+        chestahedronMesh.position.set(0, HEIGHT * 5, 0)
         this.getScene().add(chestahedronMesh)
 
-        // font
+        // must read font first
         var fontLoader = new THREE.FontLoader();
         fontLoader.load('https://cdn.jsdelivr.net/npm/three@0.117.1/examples/fonts/helvetiker_bold.typeface.json', (font) => {
 
@@ -46,13 +48,9 @@ export default class BlockchainModel extends Scene {
                 opacity: 0.4,
                 side: THREE.DoubleSide
             });
-            let labelMesh = this.getLabelMesh(text, font, 200, 20, textMat, backgroundMat, textMat)
-            labelMesh.position.y = 150;
-            this.getScene().add(labelMesh);
-
-
-            //let LinesGeo = this.getLinesGeo(text, font, 200, 20)
-
+            let labelObj3d = this.getLabelObj3d(text, font, 200, 20, textMat, backgroundMat, textMat)
+            labelObj3d.position.y = 200;
+            this.getScene().add(labelObj3d);
 
         })
 
