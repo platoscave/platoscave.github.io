@@ -32,6 +32,23 @@ export default class BlockchainModel extends Scene {
         const pipeMaterial = new THREE.MeshPhongMaterial({ color: 0xe0e0e0 });
         let chestahedronMesh = new THREE.Mesh(this.makeChestahedronGeom(), pipeMaterial)
         chestahedronMesh.position.set(0, HEIGHT * 5, 0)
+        //chestahedronMesh.rotateZ(Math.PI/2);
+        //new TWEEN.Tween(chestahedronMesh.rotateY).easing(TWEEN.Easing.Quadratic.Out).to(-Math.PI/6, 1000).start().repeat(Infinity)  
+        let waterTween = new TWEEN.Tween(chestahedronMesh.rotation).to({ y: -Math.PI / 6 }, 1000);
+        waterTween.easing(TWEEN.Easing.Quadratic.Out);
+        /* waterTween.onUpdate(obj => {
+            chestahedronMesh.rotation
+            // console.log('tx', obj.tx)
+            //console.log(reelObj3d.rotateY)
+            //chestahedronMesh.rotateY = obj
+            //chestahedronMesh.updateMatrix ()
+        }); */
+        waterTween.repeat(Infinity); // repeats forever
+        waterTween.start();
+        //chestahedronMesh.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/6);
+        //chestahedronMesh.updateMatrix ()
+
+
         this.getScene().add(chestahedronMesh)
 
         // must read font first
@@ -67,7 +84,8 @@ export default class BlockchainModel extends Scene {
         //filmObj3d.position.set(TANSACTIONBALANCES.x, TANSACTIONBALANCES.y, TANSACTIONBALANCES.z)
         blockchainModelObject3d.add(filmObj3d);
 
-
+        let fiberMesh = this.getFiberMesh()
+        blockchainModelObject3d.add(fiberMesh);
 
         return blockchainModelObject3d
 
@@ -80,101 +98,40 @@ export default class BlockchainModel extends Scene {
 
         let filmObj3d = new THREE.Object3D();
         //filmObj3d.key = getRandomKey()
-        filmObj3d.name = 'Film'
+        filmObj3d.name = 'Film Strip'
 
 
-        // Film 
+        // Film exposed
 
-        const filmMaterialX = new THREE.MeshPhongMaterial({
-            color: 0xffffff,
-            opacity: 0.5,
-            side: THREE.DoubleSide,
-            //depthWrite: false,
-            //depthTest: false,
-            transparent: true,
-        });
-
-
-
-
-
-        let units = 100
-        var curve = new THREE.CatmullRomCurve3([
-            new THREE.Vector3(0, 0, 0),
-            new THREE.Vector3(-units * 4, 0, 0)
-            /* new THREE.Vector3(-units * 12, 0, 0),
-            new THREE.Vector3(-units * 12, 0, -units * 4),
-            new THREE.Vector3(-units * 8, 0, -units * 4),
-            new THREE.Vector3(-units * 9, 0, -units),
-            new THREE.Vector3(-units * 11, 0, -units),
-            new THREE.Vector3(-units * 11, 0, -units * 3) */
-        ]);
-        curve.curveType = 'catmullrom';
-        curve.closed = false;
-
-
-
-        let curveLength = curve.getLength()
-
-        let filmCanvas = this.getFilmCanvas()
-
-
+        let filmCanvas = this.getFilmCanvas(true)
         let texture = new THREE.Texture(filmCanvas);
         texture.needsUpdate = true;
         texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set(2, 1);
+        texture.repeat.set(6, 1);
+
         let filmMaterial = new THREE.MeshBasicMaterial({
             map: texture,
             side: THREE.DoubleSide,
             transparent: true
             //wireframe: true
+
         });
-
-
-        var shape = new THREE.Shape()
-            .moveTo(0, HEIGHT / 2)
-            .lineTo(0, -HEIGHT / 2)
-        /* .lineTo( -HEIGHT / 2, 20 )
-        .lineTo( HEIGHT / 2, 20 )
-        .lineTo( HEIGHT / 2, 0 ) */
-
-        var extrudeSettings = {
-            steps: 2,
-            bevelEnabled: false,
-            extrudePath: curve
-        };
-
-        let filmGeometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
-        this.assignUVs(filmGeometry)
-        console.log( 'filmGeometry', filmGeometry )
-
-        //let filmGeometry = new THREE.TubeGeometry(curve, 64, 30, 8, false);
-
- 
-
-
-        let filmMesh = new THREE.Mesh(filmGeometry, filmMaterial);
-
+        let filmGeo = new THREE.PlaneGeometry(HEIGHT * 6, HEIGHT, 1, 1)
+        let filmMesh = new THREE.Mesh(filmGeo, filmMaterial);
+        filmMesh.position.set(-600, 0, 0);
         filmObj3d.add(filmMesh);
-        //this.pushSelectableMeshArr(filmMesh)
 
-        let vnh2 = new VertexNormalsHelper(filmMesh, 50);
-        filmObj3d.add(vnh2);
-
-        let newTargetPos2 = new THREE.Vector2(1, 0);
-        new TWEEN.Tween(texture.offset).easing(TWEEN.Easing.Quadratic.Out).to(newTargetPos2, 1000).start().repeat(Infinity)
-
-        //TEST
+        let newTargetPos = new THREE.Vector2(1, 0);
+        new TWEEN.Tween(texture.offset).easing(TWEEN.Easing.Quadratic.Out).to(newTargetPos, 1000).start().repeat(Infinity)
 
 
-        let texture2 = new THREE.Texture(filmCanvas);
+        // Film unexposed
+
+        let filmCanvas2 = this.getFilmCanvas(false)
+        let texture2 = new THREE.Texture(filmCanvas2);
         texture2.needsUpdate = true;
         texture2.wrapS = THREE.RepeatWrapping;
-        //texture.wrapT = THREE.RepeatWrapping;
-        //texture.repeat.set( curveLength / 200, 1 );       
         texture2.repeat.set(2, 1);
-        //texture2.offset.set(0.5, 0);
 
         let filmMaterial2 = new THREE.MeshBasicMaterial({
             map: texture2,
@@ -183,73 +140,76 @@ export default class BlockchainModel extends Scene {
             //wireframe: true
 
         });
-        let tempGeo = new THREE.PlaneGeometry(HEIGHT * 2, HEIGHT, 1, 1)
-        let tempMesh2 = new THREE.Mesh(tempGeo, filmMaterial2);
-        tempMesh2.position.set(200, 0, 0);
-        filmObj3d.add(tempMesh2);
+        let filmGeo2 = new THREE.PlaneGeometry(HEIGHT * 2, HEIGHT, 1, 1)
+        let filmMesh2 = new THREE.Mesh(filmGeo2, filmMaterial2);
+        filmMesh2.position.set(200, 0, 0);
+        filmObj3d.add(filmMesh2);
 
-        let newTargetPos = new THREE.Vector2(1, 0);
-        new TWEEN.Tween(texture2.offset).easing(TWEEN.Easing.Quadratic.Out).to(newTargetPos, 1000).start().repeat(Infinity)
+        let newTargetPos2 = new THREE.Vector2(1, 0);
+        new TWEEN.Tween(texture2.offset).easing(TWEEN.Easing.Quadratic.Out).to(newTargetPos2, 1000).start().repeat(Infinity)
 
 
         /* let vnh = new VertexNormalsHelper(tempMesh2, 50);
         filmObj3d.add(vnh); */
-        let helper = new VertexNormalsHelper( tempMesh2, 50, 0x00ff00, 1 ); 
-        filmObj3d.add( helper );
-
-
-        console.log( 'tempGeo', tempGeo )
 
 
 
-    
+
+
 
 
 
         // TODO merge geo
-        let reelMesh = this.getReelGeo()
+        let units = 200
+        let reelMesh = this.getReelGeo(filmCanvas)
         reelMesh.position.set(-units * 10, -50, -units * 2);
         filmObj3d.add(reelMesh);
 
         return filmObj3d
     }
 
-    assignUVs(geometry) {
+    getReelGeo(filmCanvas) {
 
-        geometry.faceVertexUvs[0] = [];
-    
-        geometry.faces.forEach(function(face) {
-    
-            var components = ['x', 'y', 'z'].sort(function(a, b) {
-                return Math.abs(face.normal[a]) > Math.abs(face.normal[b]);
-            });
-    
-            var v1 = geometry.vertices[face.a];
-            var v2 = geometry.vertices[face.b];
-            var v3 = geometry.vertices[face.c];
-    
-            geometry.faceVertexUvs[0].push([
-                /* new THREE.Vector2(v1[components[0]], v1[components[1]]),
-                new THREE.Vector2(v2[components[0]], v2[components[1]]),
-                new THREE.Vector2(v3[components[0]], v3[components[1]]) */
-                new THREE.Vector2(v1.x/400, v1.y > 0 ? 1 : 0),
-                new THREE.Vector2(v2.x/400, v2.y > 0 ? 1 : 0),
-                new THREE.Vector2(v3.x/400, v3.y > 0 ? 1 : 0) 
-            ]);
 
-            console.log('v1', v1)
-            console.log('faceVertexUvs', v1.x/400, v1.y > 0 ? 1 : 0)
-            console.log('v2', v2)
-            console.log('faceVertexUvs', v2.x/400, v2.y > 0 ? 1 : 0)
-            console.log('v3', v3)
-            console.log('faceVertexUvs', v3.x/400, v3.y > 0 ? 1 : 0) 
-    
+        let reelObj3d = new THREE.Object3D();
+        //filmObj3d.key = getRandomKey()
+        reelObj3d.name = 'Film Strip'
+
+        let texture = new THREE.Texture(filmCanvas);
+        texture.needsUpdate = true;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.repeat.set(14, 1);
+
+        let filmMaterial = new THREE.MeshBasicMaterial({
+            map: texture,
+            side: THREE.DoubleSide,
+            transparent: true
+            //wireframe: true
+
         });
-    
-        geometry.uvsNeedUpdate = true;
-    }
+        var filmGeometry = new THREE.CylinderGeometry(400, 400, 200, 32, 1, true);
+        //filmGeometry.openEnded = true
+        let filmMesh = new THREE.Mesh(filmGeometry, filmMaterial);
 
-    getReelGeo() {
+
+
+        reelObj3d.add(filmMesh)
+
+        reelObj3d.rotateOnAxis(new THREE.Vector3(0, 1, 0).normalize(), 0.1);
+        //new TWEEN.Tween(reelObj3d.rotateY).easing(TWEEN.Easing.Quadratic.Out).to(-Math.PI/6, 1000).start().repeat(Infinity)
+        return reelObj3d
+
+        let waterTween = new TWEEN.Tween({ tx: 0 }).to({ tx: -Math.PI / 6 }, 1000);
+        waterTween.easing(TWEEN.Easing.Quadratic.Out);
+        waterTween.onUpdate(obj => {
+            // console.log('tx', obj.tx)
+            console.log(reelObj3d.rotateY)
+            reelObj3d.rotateY = obj
+        });
+        waterTween.repeat(Infinity); // repeats forever
+        waterTween.start();
+
+        return reelObj3d
 
 
         // Reel
@@ -257,6 +217,8 @@ export default class BlockchainModel extends Scene {
         const reelMaterial = new THREE.MeshPhongMaterial({
             color: 0xe0e0e0,
         });
+
+
 
 
         var circleShape = new THREE.Shape()
@@ -280,7 +242,7 @@ export default class BlockchainModel extends Scene {
 
     }
 
-    getFilmCanvas(curveLength) {
+    getFilmCanvas(exposed) {
         const length = 256
         let canvas = document.createElement("canvas");
         let ctx = canvas.getContext("2d");
@@ -291,27 +253,28 @@ export default class BlockchainModel extends Scene {
         ctx.fillStyle = 'rgba(215, 219, 221, 0.3)';
         ctx.fillRect(10, 40, length - 20, length - 80);
 
-        ctx.font = "8pt Courier New";
-        //ctx.fillStyle = 'rgb(256, 256, 256)';
-        ctx.fillStyle = 'rgb(0, 0, 0)';
-        ctx.fillText('block_num: 117936163', 10, 50);
-        ctx.fillText('timestamp: 2020-04-28T21:14:54.500', 10, 60);
-        ctx.fillText('previous: "07079022384a78b8ca426174fbb65dcced0e71e54defea00b257454b27e0ce6a"', 10, 70);
-        ctx.fillText('transactions: [', 10, 80);
-        ctx.fillText('cpu_usage_us: 5732', 20, 90);
-        ctx.fillText('net_usage_words: 12', 20, 100);
-        ctx.fillText('trx: {', 20, 110);
-        ctx.fillText('signatures: [', 30, 120);
-        ctx.fillText('"SIG_K1_KXYrzRFDmRfkQo7MK6B9BRoq3oaDFQgGPsQgTGWGDyngzUPJEoh5eNXxT3FsNuH6ZYpYhivoRRSLYaShXRjL6inF2WPDv6"', 40, 130);
-        ctx.fillText(']', 30, 140);
-        ctx.fillText('transaction: {', 30, 150);
-        ctx.fillText('actions: [', 40, 160);
-        ctx.fillText('{', 50, 170);
-        ctx.fillText('account: "pptqipaelyog"', 60, 180);
-        ctx.fillText('authorization: [', 60, 190);
-        ctx.fillText('{', 70, 200);
-        ctx.fillText('actor: "izcv2brw3sqe"', 80, 210);
-
+        if (exposed) {
+            ctx.font = "8pt Courier New";
+            //ctx.fillStyle = 'rgb(256, 256, 256)';
+            ctx.fillStyle = 'rgb(0, 0, 0)';
+            ctx.fillText('block_num: 117936163', 10, 50);
+            ctx.fillText('timestamp: 2020-04-28T21:14:54.500', 10, 60);
+            ctx.fillText('previous: "07079022384a78b8ca426174fbb65dcced0e71e54defea00b257454b27e0ce6a"', 10, 70);
+            ctx.fillText('transactions: [', 10, 80);
+            ctx.fillText('cpu_usage_us: 5732', 20, 90);
+            ctx.fillText('net_usage_words: 12', 20, 100);
+            ctx.fillText('trx: {', 20, 110);
+            ctx.fillText('signatures: [', 30, 120);
+            ctx.fillText('"SIG_K1_KXYrzRFDmRfkQo7MK6B9BRoq3oaDFQgGPsQgTGWGDyngzUPJEoh5eNXxT3FsNuH6ZYpYhivoRRSLYaShXRjL6inF2WPDv6"', 40, 130);
+            ctx.fillText(']', 30, 140);
+            ctx.fillText('transaction: {', 30, 150);
+            ctx.fillText('actions: [', 40, 160);
+            ctx.fillText('{', 50, 170);
+            ctx.fillText('account: "pptqipaelyog"', 60, 180);
+            ctx.fillText('authorization: [', 60, 190);
+            ctx.fillText('{', 70, 200);
+            ctx.fillText('actor: "izcv2brw3sqe"', 80, 210);
+        }
 
         // path
         ctx.beginPath();
@@ -355,6 +318,52 @@ export default class BlockchainModel extends Scene {
         return canvas
     }
 
+    getFiberMesh(){
+        let points = []
+        points.push(new THREE.Vector3(-5000, 5000, -5000))
+        points.push(new THREE.Vector3(-300, 3000, -2000))
+        points.push(new THREE.Vector3(-500, 500, -500))
+
+
+        let filmCanvas = this.getElectronCanvas()
+        let texture = new THREE.Texture(filmCanvas);
+        texture.needsUpdate = true;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(50, 1);
+
+        let material = new THREE.MeshBasicMaterial({
+            map: texture,
+            //side: THREE.DoubleSide,
+            transparent: true,
+            //wireframe: true
+            color: 0xe0e0e0 
+
+        });
+
+        let curve = new THREE.CatmullRomCurve3(points);
+        let geometry = new THREE.TubeGeometry(curve, 10, 2, 8, false);
+        let mesh = new THREE.Mesh(geometry, material);
+
+        let newTargetPos = new THREE.Vector2(-1, 0);
+        new TWEEN.Tween(texture.offset).easing(TWEEN.Easing.Linear.None).to(newTargetPos, 500).start().repeat(Infinity)
+        return mesh
+
+    }
+    getElectronCanvas() {
+        let canvas = document.createElement("canvas");
+        let ctx = canvas.getContext("2d");
+        ctx.canvas.width = 128;
+        ctx.canvas.height = 32;
+        // Create gradient
+        var grd = ctx.createLinearGradient(50,0,128,0);
+        grd.addColorStop(0,"rgba(64, 64, 255, .3)");
+        grd.addColorStop(1,"rgba(255, 255, 255, 1)");
+        // Fill with gradient
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, 200, 32);
+        return canvas
+    }
 
 
 }
