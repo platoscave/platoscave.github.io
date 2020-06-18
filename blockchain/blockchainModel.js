@@ -6,6 +6,8 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.m
 // import TWEEN from "https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js";
 import Scene from "../lib/scene.js";
 import { Water } from "https://cdn.jsdelivr.net/npm/three@0.117.1/examples/jsm/objects/Water2.js";
+import { FaceNormalsHelper } from 'https://cdn.jsdelivr.net/npm/three@0.117.1/examples/jsm/helpers/FaceNormalsHelper.js';
+import { VertexNormalsHelper } from 'https://cdn.jsdelivr.net/npm/three@0.117.1/examples/jsm/helpers/VertexNormalsHelper.js';
 
 const WIDTH = 400;
 const HEIGHT = 200;
@@ -99,12 +101,13 @@ export default class BlockchainModel extends Scene {
         let units = 100
         var curve = new THREE.CatmullRomCurve3([
             new THREE.Vector3(0, 0, 0),
-            new THREE.Vector3(-units * 12, 0, 0),
+            new THREE.Vector3(-units * 4, 0, 0)
+            /* new THREE.Vector3(-units * 12, 0, 0),
             new THREE.Vector3(-units * 12, 0, -units * 4),
             new THREE.Vector3(-units * 8, 0, -units * 4),
             new THREE.Vector3(-units * 9, 0, -units),
             new THREE.Vector3(-units * 11, 0, -units),
-            new THREE.Vector3(-units * 11, 0, -units * 3)
+            new THREE.Vector3(-units * 11, 0, -units * 3) */
         ]);
         curve.curveType = 'catmullrom';
         curve.closed = false;
@@ -113,49 +116,56 @@ export default class BlockchainModel extends Scene {
 
         let curveLength = curve.getLength()
 
-        let filmCanvas = this.makeFilmCanvas()
+        let filmCanvas = this.getFilmCanvas()
 
 
         let texture = new THREE.Texture(filmCanvas);
         texture.needsUpdate = true;
         texture.wrapS = THREE.RepeatWrapping;
-        //texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set( 14, 1 );
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(2, 1);
         let filmMaterial = new THREE.MeshBasicMaterial({
             map: texture,
+            side: THREE.DoubleSide,
             transparent: true
+            //wireframe: true
         });
 
 
         var shape = new THREE.Shape()
-        .moveTo( HEIGHT / 2, 0 )
-        .lineTo( -HEIGHT / 2, 0 )
-        .lineTo( -HEIGHT / 2, 20 )
+            .moveTo(0, HEIGHT / 2)
+            .lineTo(0, -HEIGHT / 2)
+        /* .lineTo( -HEIGHT / 2, 20 )
         .lineTo( HEIGHT / 2, 20 )
-        .lineTo( HEIGHT / 2, 0 )
+        .lineTo( HEIGHT / 2, 0 ) */
 
         var extrudeSettings = {
-            steps: 100,
+            steps: 2,
             bevelEnabled: false,
             extrudePath: curve
         };
 
-        var filmGeometry = new THREE.ExtrudeBufferGeometry( shape, extrudeSettings );
+        let filmGeometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+        this.assignUVs(filmGeometry)
+        console.log( 'filmGeometry', filmGeometry )
 
         //let filmGeometry = new THREE.TubeGeometry(curve, 64, 30, 8, false);
+
+ 
+
+
         let filmMesh = new THREE.Mesh(filmGeometry, filmMaterial);
 
         filmObj3d.add(filmMesh);
         //this.pushSelectableMeshArr(filmMesh)
 
-        let blockObj3D = this.getBlockObject3D(curve)
-        filmObj3d.add(blockObj3D); 
+        let vnh2 = new VertexNormalsHelper(filmMesh, 50);
+        filmObj3d.add(vnh2);
 
+        let newTargetPos2 = new THREE.Vector2(1, 0);
+        new TWEEN.Tween(texture.offset).easing(TWEEN.Easing.Quadratic.Out).to(newTargetPos2, 1000).start().repeat(Infinity)
 
-
-
-
-
+        //TEST
 
 
         let texture2 = new THREE.Texture(filmCanvas);
@@ -164,23 +174,82 @@ export default class BlockchainModel extends Scene {
         //texture.wrapT = THREE.RepeatWrapping;
         //texture.repeat.set( curveLength / 200, 1 );       
         texture2.repeat.set(2, 1);
+        //texture2.offset.set(0.5, 0);
+
         let filmMaterial2 = new THREE.MeshBasicMaterial({
             map: texture2,
+            side: THREE.DoubleSide,
             transparent: true
+            //wireframe: true
+
         });
-        let tempMesh2 = new THREE.Mesh(new THREE.PlaneGeometry(HEIGHT * 2, HEIGHT, 10, 10), filmMaterial2);
-        tempMesh2.position.set(0, -200, 0);
+        let tempGeo = new THREE.PlaneGeometry(HEIGHT * 2, HEIGHT, 1, 1)
+        let tempMesh2 = new THREE.Mesh(tempGeo, filmMaterial2);
+        tempMesh2.position.set(200, 0, 0);
         filmObj3d.add(tempMesh2);
 
+        let newTargetPos = new THREE.Vector2(1, 0);
+        new TWEEN.Tween(texture2.offset).easing(TWEEN.Easing.Quadratic.Out).to(newTargetPos, 1000).start().repeat(Infinity)
+
+
+        /* let vnh = new VertexNormalsHelper(tempMesh2, 50);
+        filmObj3d.add(vnh); */
+        let helper = new VertexNormalsHelper( tempMesh2, 50, 0x00ff00, 1 ); 
+        filmObj3d.add( helper );
+
+
+        console.log( 'tempGeo', tempGeo )
 
 
 
+    
 
 
 
+        // TODO merge geo
+        let reelMesh = this.getReelGeo()
+        reelMesh.position.set(-units * 10, -50, -units * 2);
+        filmObj3d.add(reelMesh);
 
+        return filmObj3d
+    }
 
+    assignUVs(geometry) {
 
+        geometry.faceVertexUvs[0] = [];
+    
+        geometry.faces.forEach(function(face) {
+    
+            var components = ['x', 'y', 'z'].sort(function(a, b) {
+                return Math.abs(face.normal[a]) > Math.abs(face.normal[b]);
+            });
+    
+            var v1 = geometry.vertices[face.a];
+            var v2 = geometry.vertices[face.b];
+            var v3 = geometry.vertices[face.c];
+    
+            geometry.faceVertexUvs[0].push([
+                /* new THREE.Vector2(v1[components[0]], v1[components[1]]),
+                new THREE.Vector2(v2[components[0]], v2[components[1]]),
+                new THREE.Vector2(v3[components[0]], v3[components[1]]) */
+                new THREE.Vector2(v1.x/400, v1.y > 0 ? 1 : 0),
+                new THREE.Vector2(v2.x/400, v2.y > 0 ? 1 : 0),
+                new THREE.Vector2(v3.x/400, v3.y > 0 ? 1 : 0) 
+            ]);
+
+            console.log('v1', v1)
+            console.log('faceVertexUvs', v1.x/400, v1.y > 0 ? 1 : 0)
+            console.log('v2', v2)
+            console.log('faceVertexUvs', v2.x/400, v2.y > 0 ? 1 : 0)
+            console.log('v3', v3)
+            console.log('faceVertexUvs', v3.x/400, v3.y > 0 ? 1 : 0) 
+    
+        });
+    
+        geometry.uvsNeedUpdate = true;
+    }
+
+    getReelGeo() {
 
 
         // Reel
@@ -205,16 +274,13 @@ export default class BlockchainModel extends Scene {
         var reelGeometry = new THREE.ExtrudeBufferGeometry(circleShape, extrudeSettings);
 
         let reelMesh = new THREE.Mesh(reelGeometry, reelMaterial);
-        reelMesh.position.set(-units * 10, -50, -units * 2);
         reelMesh.rotation.x = Math.PI / 2;
 
-        filmObj3d.add(reelMesh);
+        return reelMesh
 
-
-
-        return filmObj3d
     }
-    makeFilmCanvas(curveLength) {
+
+    getFilmCanvas(curveLength) {
         const length = 256
         let canvas = document.createElement("canvas");
         let ctx = canvas.getContext("2d");
@@ -289,62 +355,6 @@ export default class BlockchainModel extends Scene {
         return canvas
     }
 
-
-    getBlockObject3D(curve) {
-        let object3d = new THREE.Object3D();
-
-        let coneMaterial = new THREE.MeshLambertMaterial({ color: 0xffdf00 });
-        let coneGeometry = new THREE.CylinderGeometry(0, 10, 50, 40, 40, false);
-        let coneMesh = new THREE.Mesh(coneGeometry, coneMaterial);
-
-        let t = 0;
-        let matrix = new THREE.Matrix4();
-        let up = new THREE.Vector3(0, 1, 0);
-        let axis = new THREE.Vector3();
-        let pt, radians, tangent;
-
-        // set the marker position
-        pt = curve.getPoint(t);
-        coneMesh.position.set(pt.x, pt.y, pt.z);
-
-        // get the tangent to the curve
-        tangent = curve.getTangent(t).normalize();
-
-        // calculate the axis to rotate around
-        axis.crossVectors(up, tangent).normalize();
-
-        // calcluate the angle between the up vector and the tangent
-        radians = Math.acos(up.dot(tangent));
-
-        // set the quaternion
-        coneMesh.quaternion.setFromAxisAngle(axis, radians);
-        object3d.add(coneMesh);
-
-        let waterTween = new TWEEN.Tween({ tx: 0 }).to({ tx: 1 }, 8000);
-        waterTween.easing(TWEEN.Easing.Linear.None);
-        waterTween.onUpdate(obj => {
-            // console.log('tx', obj.tx)
-            // set the marker position
-            pt = curve.getPoint(obj);
-            coneMesh.position.set(pt.x, pt.y, pt.z);
-
-            // get the tangent to the curve
-            tangent = curve.getTangent(obj).normalize();
-
-            // calculate the axis to rotate around
-            axis.crossVectors(up, tangent).normalize();
-
-            // calcluate the angle between the up vector and the tangent
-            radians = Math.acos(up.dot(tangent));
-
-            // set the quaternion
-            coneMesh.quaternion.setFromAxisAngle(axis, radians);
-        });
-        waterTween.repeat(Infinity); // repeats forever
-        waterTween.start();
-
-        return object3d
-    }
 
 
 }
