@@ -1,7 +1,7 @@
 "use strict";
 
-//import TWEEN from "../lib/tween.js/src/Tween.js";
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.module.js";
+//import TWEEN from "../lib/tween.js/src/Tween.js";
 //import * as TWEEN  from "https://cdn.jsdelivr.net/npm/es6-tween";
 // import TWEEN from "https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js";
 import Scene from "../lib/scene.js";
@@ -17,17 +17,34 @@ const IDLEBALANCES = new THREE.Vector3(WIDTH * 1.25, HEIGHT * 2.5, 0)
 const FOREIGNBALANCES = new THREE.Vector3(WIDTH * 1.25, - HEIGHT * 2.5, 0)
 const TANSACTIONBALANCES = new THREE.Vector3(0, - HEIGHT * 5, 0)
 
-let font, textMat, backgroundMat
+let font, labelTextMat, labelBackgroundMat, calloutBackgroundMat
 
 export default class BlockchainModel extends Scene {
 
     constructor() {
         super()
+
+
+        labelTextMat = new THREE.MeshBasicMaterial({
+            color: 0x404040,
+            side: THREE.DoubleSide
+        });
+        labelBackgroundMat = new THREE.MeshBasicMaterial({
+            color: 0xD7DADD,
+            transparent: true,
+            opacity: 0.7,
+            side: THREE.DoubleSide
+        });
+        calloutBackgroundMat = new THREE.MeshBasicMaterial({
+            color: 0xF9E79F,
+            transparent: true,
+            opacity: 0.7,
+            side: THREE.DoubleSide
+        });
     }
 
     init() {
-        let blockchainModelObject3d = this.blockchainModel()
-        this.getScene().add(blockchainModelObject3d)
+
 
         const pipeMaterial = new THREE.MeshPhongMaterial({ color: 0xe0e0e0 });
         let chestahedronMesh = new THREE.Mesh(this.makeChestahedronGeom(), pipeMaterial)
@@ -53,23 +70,13 @@ export default class BlockchainModel extends Scene {
 
         // must read font first
         var fontLoader = new THREE.FontLoader();
-        fontLoader.load('https://cdn.jsdelivr.net/npm/three@0.117.1/examples/fonts/helvetiker_bold.typeface.json', (font) => {
+        fontLoader.load('https://cdn.jsdelivr.net/npm/three@0.117.1/examples/fonts/helvetiker_bold.typeface.json', (font2) => {
 
-            let text = 'This is a long text that wont fit on one line'
+            font = font2
 
-            var textMat = new THREE.MeshBasicMaterial({
-                color: 0x006699,
-                side: THREE.DoubleSide
-            });
-            var backgroundMat = new THREE.MeshBasicMaterial({
-                color: 0x006699,
-                transparent: true,
-                opacity: 0.4,
-                side: THREE.DoubleSide
-            });
-            let labelObj3d = this.getLabelObj3d(text, font, 200, 20, textMat, backgroundMat, textMat)
-            labelObj3d.position.y = 200;
-            this.getScene().add(labelObj3d);
+            let blockchainModelObject3d = this.blockchainModel()
+            this.getScene().add(blockchainModelObject3d)
+
 
         })
 
@@ -274,6 +281,14 @@ export default class BlockchainModel extends Scene {
         });
         waterTween.repeat(Infinity); // repeats forever
         waterTween.start(); */
+        //labelTextMat, labelBackgroundMat, calloutBackgroundMat
+
+        let text = 'All blocks, right back the very first Genisis block, are recorded as an immutable datastore. If you star tat the Genisis block and replay all the transactions in the same order, you will arrive at the same memory state'
+
+
+        let labelObj3d = this.getLabelObj3d(text, font, 600, 20, labelTextMat, calloutBackgroundMat, labelTextMat, 'bottomRight')
+        labelObj3d.position.y = 300;
+        reelObj3d.add(labelObj3d);
 
         return reelObj3d
 
