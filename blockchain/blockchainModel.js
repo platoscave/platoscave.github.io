@@ -81,7 +81,7 @@ export default class BlockchainModel extends Scene {
         //scene.add(blockchainModelObject3d);
 
         let filmObj3d = this.getBlockchainFilm()
-        //filmObj3d.position.set(TANSACTIONBALANCES.x, TANSACTIONBALANCES.y, TANSACTIONBALANCES.z)
+        filmObj3d.translateZ( -DEPTH * 10)
         blockchainModelObject3d.add(filmObj3d);
 
         let fiberMesh = this.getFiberMesh()
@@ -92,9 +92,7 @@ export default class BlockchainModel extends Scene {
 
     }
 
-    getBlockchainFilm(text) {
-
-
+    getBlockchainFilm(tet) {
 
         let filmObj3d = new THREE.Object3D();
         //filmObj3d.key = getRandomKey()
@@ -152,29 +150,51 @@ export default class BlockchainModel extends Scene {
         /* let vnh = new VertexNormalsHelper(tempMesh2, 50);
         filmObj3d.add(vnh); */
 
+        // film holder back
+        let holderMaterial = new THREE.MeshBasicMaterial({ color: 0x404040, side: THREE.DoubleSide });
+        let backHolderGeo = new THREE.PlaneGeometry(HEIGHT, HEIGHT, 1, 1)
+        let backHolderMesh = new THREE.Mesh(backHolderGeo, holderMaterial);
+        backHolderMesh.position.set( -HEIGHT / 2, 0, -5);
+        filmObj3d.add(backHolderMesh);
+
+        // film holder front
+        // Make shape with holes
+        var frontHolderShape = new THREE.Shape()
+            .moveTo(0, 0)
+            .lineTo(HEIGHT, 0)
+            .lineTo(HEIGHT, HEIGHT)
+            .lineTo(0, HEIGHT)
+        // square hole
+        var holePath = new THREE.Path()
+            .moveTo(10, 30)
+            .lineTo(10, HEIGHT - 30)
+            .lineTo(HEIGHT - 10, HEIGHT - 30)
+            .lineTo(HEIGHT - 10, 30)
+            frontHolderShape.holes.push(holePath);
+        let frontHolderGeo = new THREE.ShapeGeometry(frontHolderShape);
+        frontHolderGeo.center()
+        let frontHolderMesh = new THREE.Mesh(frontHolderGeo, holderMaterial);
+        frontHolderMesh.position.set( -HEIGHT / 2, 0, 5);
+        filmObj3d.add(frontHolderMesh);
 
 
 
-
-
-
-
-        // TODO merge geo
-        let units = 200
+        // Add thr film reel
         let reelMesh = this.getReelGeo(filmCanvas)
-        reelMesh.position.set(-units * 10, -50, -units * 2);
+        reelMesh.position.set(-HEIGHT * 6, 0, -HEIGHT * 2);
         filmObj3d.add(reelMesh);
 
+        filmObj3d.translateX(100)
         return filmObj3d
     }
 
     getReelGeo(filmCanvas) {
 
-
         let reelObj3d = new THREE.Object3D();
         //filmObj3d.key = getRandomKey()
-        reelObj3d.name = 'Film Strip'
+        reelObj3d.name = 'Film Reel'
 
+        // wrap the film arround a cylinder
         let texture = new THREE.Texture(filmCanvas);
         texture.needsUpdate = true;
         texture.wrapS = THREE.RepeatWrapping;
@@ -188,14 +208,60 @@ export default class BlockchainModel extends Scene {
 
         });
         var filmGeometry = new THREE.CylinderGeometry(400, 400, 200, 32, 1, true);
-        //filmGeometry.openEnded = true
         let filmMesh = new THREE.Mesh(filmGeometry, filmMaterial);
-
-
-
         reelObj3d.add(filmMesh)
 
-        reelObj3d.rotateOnAxis(new THREE.Vector3(0, 1, 0).normalize(), 0.1);
+        // Fill the inside with a dark cylinder
+        let innerMaterial = new THREE.MeshBasicMaterial({ color: 0x404040 });
+        var innerGeometry = new THREE.CylinderGeometry(390, 390, 200, 32, 1);
+        let innerMesh = new THREE.Mesh(innerGeometry, innerMaterial);
+        reelObj3d.add(innerMesh)
+
+
+
+
+        // Reel
+
+        // Make shape with holes
+        var circleShape = new THREE.Shape()
+            .moveTo(0, 0)
+            .absarc(0, 0, 450, 0, Math.PI * 2, false);
+
+        // center hole
+        var holePath = new THREE.Path()
+            .moveTo(0, 0)
+            .absarc(0, 0, 20, 0, Math.PI * 2, true);
+        circleShape.holes.push(holePath);
+
+        // 6 holes arround
+        for (let i = 1; i < 7; i++) {
+            let rad = Math.PI * 2 / 6 * i
+            let x = Math.sin(rad) * 275
+            let y = Math.cos(rad) * 275
+            let holePath = new THREE.Path()
+                .moveTo(x, y)
+                .absarc(x, y, 110, 0, Math.PI * 2, true);
+            circleShape.holes.push(holePath);
+        }
+
+        // Make the Mesh
+        var extrudeSettings = { depth: 5, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
+        var reelGeometry = new THREE.ExtrudeBufferGeometry(circleShape, extrudeSettings);
+        const reelMaterial = new THREE.MeshPhongMaterial({ color: 0xe0e0e0 });
+        let reelMesh = new THREE.Mesh(reelGeometry, reelMaterial);
+        reelMesh.rotation.x = Math.PI / 2;
+        reelMesh.position.set(0, -103, 0)
+        reelObj3d.add(reelMesh)
+
+        // Copy the Mesh
+        let reelMesh2 = reelMesh.clone()
+        reelMesh2.position.set(0, 104, 0)
+        reelObj3d.add(reelMesh2)
+
+
+
+
+        /* reelObj3d.rotateOnAxis(new THREE.Vector3(0, 1, 0).normalize(), 0.1);
         //new TWEEN.Tween(reelObj3d.rotateY).easing(TWEEN.Easing.Quadratic.Out).to(-Math.PI/6, 1000).start().repeat(Infinity)
         return reelObj3d
 
@@ -207,38 +273,9 @@ export default class BlockchainModel extends Scene {
             reelObj3d.rotateY = obj
         });
         waterTween.repeat(Infinity); // repeats forever
-        waterTween.start();
+        waterTween.start(); */
 
         return reelObj3d
-
-
-        // Reel
-
-        const reelMaterial = new THREE.MeshPhongMaterial({
-            color: 0xe0e0e0,
-        });
-
-
-
-
-        var circleShape = new THREE.Shape()
-            .moveTo(0, 0)
-            .absarc(0, 0, 400, 0, Math.PI * 2, false);
-
-        var holePath = new THREE.Path()
-            .moveTo(0, 0)
-            .absarc(0, 0, 40, 0, Math.PI * 2, true);
-
-        circleShape.holes.push(holePath);
-
-        var extrudeSettings = { depth: 8, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
-
-        var reelGeometry = new THREE.ExtrudeBufferGeometry(circleShape, extrudeSettings);
-
-        let reelMesh = new THREE.Mesh(reelGeometry, reelMaterial);
-        reelMesh.rotation.x = Math.PI / 2;
-
-        return reelMesh
 
     }
 
@@ -318,7 +355,7 @@ export default class BlockchainModel extends Scene {
         return canvas
     }
 
-    getFiberMesh(){
+    getFiberMesh() {
         let points = []
         points.push(new THREE.Vector3(-5000, 5000, -5000))
         points.push(new THREE.Vector3(-300, 3000, -2000))
@@ -337,7 +374,7 @@ export default class BlockchainModel extends Scene {
             //side: THREE.DoubleSide,
             transparent: true,
             //wireframe: true
-            color: 0xe0e0e0 
+            color: 0xe0e0e0
 
         });
 
@@ -356,9 +393,9 @@ export default class BlockchainModel extends Scene {
         ctx.canvas.width = 128;
         ctx.canvas.height = 32;
         // Create gradient
-        var grd = ctx.createLinearGradient(50,0,128,0);
-        grd.addColorStop(0,"rgba(64, 64, 255, .3)");
-        grd.addColorStop(1,"rgba(255, 255, 255, 1)");
+        var grd = ctx.createLinearGradient(50, 0, 128, 0);
+        grd.addColorStop(0, "rgba(64, 64, 255, .3)");
+        grd.addColorStop(1, "rgba(255, 255, 255, 1)");
         // Fill with gradient
         ctx.fillStyle = grd;
         ctx.fillRect(0, 0, 200, 32);
