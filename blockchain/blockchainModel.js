@@ -149,7 +149,7 @@ export default class BlockchainModel extends Scene {
         filmObj3d.add(vnh); */
 
         // film holder back
-        let holderMaterial = new THREE.MeshBasicMaterial({ color: 0x404040, side: THREE.DoubleSide });
+        let holderMaterial = new THREE.MeshPhongMaterial({ color: 0x404040, side: THREE.DoubleSide });
         //let holderMaterialLight = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
         let backHolderGeo = new THREE.PlaneGeometry(HEIGHT, HEIGHT, 1, 1)
         let backHolderMesh = new THREE.Mesh(backHolderGeo, holderMaterial);
@@ -178,12 +178,26 @@ export default class BlockchainModel extends Scene {
 
 
 
-        // Add thr film reel
+        // Add the film reel
         let reelMesh = await this.getReelGeo(filmCanvas)
         reelMesh.position.set(-HEIGHT * 6, 0, -HEIGHT * 2);
         filmObj3d.add(reelMesh);
 
         filmObj3d.translateX(100)
+
+
+        // Trapezoid projector
+
+        var geometry = new THREE.CylinderGeometry(0.1 / Math.sqrt(2), 1 / Math.sqrt(2), 1, 4, 1, true); // size of top can be changed
+        geometry.rotateY(Math.PI / 4);
+        geometry.rotateX(Math.PI / 2);
+        geometry.computeFlatVertexNormals();
+        let mesh = new THREE.Mesh(geometry, holderMaterial);
+        mesh.scale.set(100, 100, 100);
+        mesh.position.set(-100, 0, 200)
+        filmObj3d.add(mesh);
+
+
         return filmObj3d
     }
 
@@ -417,7 +431,8 @@ export default class BlockchainModel extends Scene {
         // blockchain write
         let points4 = []
         points4.push(new THREE.Vector3(0, 20, -740))
-        points4.push(new THREE.Vector3(0, 20, -1200))
+        points4.push(new THREE.Vector3(40, -40, -1000))
+        points4.push(new THREE.Vector3(0, 0, -1750))
         let fiberMesh4 = this.getFiberMesh(points4)
         fiberObj3d.add(fiberMesh4);
 
@@ -488,7 +503,7 @@ export default class BlockchainModel extends Scene {
 
         let cpuTextGeo = await this.makeTextLinesGeom('CPU', 'helvetiker_bold', 50, 40)
         let cpuTextMesh = new THREE.Mesh(cpuTextGeo, labelTextMat)
-        cpuTextMesh.rotateX( - Math.PI / 2)
+        cpuTextMesh.rotateX(- Math.PI / 2)
         cpuTextMesh.position.set(-60, 35, -80)
         serverObj3d.add(cpuTextMesh)
 
@@ -502,7 +517,7 @@ export default class BlockchainModel extends Scene {
         let textMat = new THREE.MeshBasicMaterial({ color: 0x808080 });
         let memTextGeo = await this.makeTextLinesGeom('RAM 4GB', 'helvetiker_regular', 50, 15)
         let memTextMesh = new THREE.Mesh(memTextGeo, textMat)
-        memTextMesh.rotateX( - Math.PI / 2)
+        memTextMesh.rotateX(- Math.PI / 2)
 
         //var memoryGeometry = new THREE.BoxGeometry(WIDTH / 2, 10, WIDTH / 5, 32, 1);
         for (let i = -4; i < 4; i++) {
