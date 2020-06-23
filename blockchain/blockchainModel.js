@@ -1,4 +1,4 @@
-"use strict";
+//"use strict";
 
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.module.js";
 //import TWEEN from "../lib/tween.js/src/Tween.js";
@@ -43,63 +43,54 @@ export default class BlockchainModel extends Scene {
         });
     }
 
-    init() {
+    async init() {
 
 
         const pipeMaterial = new THREE.MeshPhongMaterial({ color: 0xe0e0e0 });
-        let chestahedronMesh = new THREE.Mesh(this.makeChestahedronGeom(), pipeMaterial)
+        let chestahedronGeom = this.makeChestahedronGeom()
+        let chestahedronMesh = new THREE.Mesh(this.makeChestahedronGeom(chestahedronGeom), pipeMaterial)
         chestahedronMesh.position.set(0, HEIGHT * 5, 0)
-        //chestahedronMesh.rotateZ(Math.PI/2);
-        //new TWEEN.Tween(chestahedronMesh.rotateY).easing(TWEEN.Easing.Quadratic.Out).to(-Math.PI/6, 1000).start().repeat(Infinity)  
-        let waterTween = new TWEEN.Tween(chestahedronMesh.rotation).to({ y: -Math.PI / 6 }, 1000);
-        waterTween.easing(TWEEN.Easing.Quadratic.Out);
-        /* waterTween.onUpdate(obj => {
-            chestahedronMesh.rotation
-            // console.log('tx', obj.tx)
-            //console.log(reelObj3d.rotateY)
-            //chestahedronMesh.rotateY = obj
-            //chestahedronMesh.updateMatrix ()
-        }); */
-        waterTween.repeat(Infinity); // repeats forever
-        waterTween.start();
-        //chestahedronMesh.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/6);
-        //chestahedronMesh.updateMatrix ()
+        let chestTween = new TWEEN.Tween().to(null, 10000);
+        chestTween.easing(TWEEN.Easing.Quartic.InOut);//Quartic.InOut Sinusoidal.InOut
+        chestTween.onUpdate(rad => {
+            chestahedronMesh.rotation.y = rad * Math.PI * 2 / 3
+        });
+        chestTween.repeat(Infinity); // repeats forever
+        chestTween.start();
 
 
         this.getScene().add(chestahedronMesh)
 
-        // must read font first
-        var fontLoader = new THREE.FontLoader();
-        fontLoader.load('https://cdn.jsdelivr.net/npm/three@0.117.1/examples/fonts/helvetiker_bold.typeface.json', (font2) => {
-
-            font = font2
-
-            let blockchainModelObject3d = this.blockchainModel()
-            this.getScene().add(blockchainModelObject3d)
-
-
-        })
+        let blockchainModelObject3d = await this.blockchainModel()
+        this.getScene().add(blockchainModelObject3d)
 
     }
 
-    blockchainModel() {
+    async blockchainModel() {
 
         let blockchainModelObject3d = new THREE.Object3D();
         //scene.add(blockchainModelObject3d);
 
-        let filmObj3d = this.getBlockchainFilm()
-        filmObj3d.translateZ( -DEPTH * 10)
+        let filmObj3d = await this.getBlockchainFilm()
+        filmObj3d.translateZ(-DEPTH * 10)
         blockchainModelObject3d.add(filmObj3d);
 
-        let fiberMesh = this.getFiberMesh()
-        blockchainModelObject3d.add(fiberMesh);
+        let serverObj3d = await this.getServerObj3d()
+        blockchainModelObject3d.add(serverObj3d);
+
+        let memoryObj3d = await this.getMemoryObj3d()
+        blockchainModelObject3d.add(memoryObj3d);
+
+
+        let fibersObj3d = this.getFibersObj3d()
+        blockchainModelObject3d.add(fibersObj3d);
 
         return blockchainModelObject3d
 
 
     }
 
-    getBlockchainFilm(tet) {
+    async getBlockchainFilm(tet) {
 
         let filmObj3d = new THREE.Object3D();
         //filmObj3d.key = getRandomKey()
@@ -159,9 +150,10 @@ export default class BlockchainModel extends Scene {
 
         // film holder back
         let holderMaterial = new THREE.MeshBasicMaterial({ color: 0x404040, side: THREE.DoubleSide });
+        //let holderMaterialLight = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
         let backHolderGeo = new THREE.PlaneGeometry(HEIGHT, HEIGHT, 1, 1)
         let backHolderMesh = new THREE.Mesh(backHolderGeo, holderMaterial);
-        backHolderMesh.position.set( -HEIGHT / 2, 0, -5);
+        backHolderMesh.position.set(-HEIGHT / 2, 0, -5);
         filmObj3d.add(backHolderMesh);
 
         // film holder front
@@ -177,17 +169,17 @@ export default class BlockchainModel extends Scene {
             .lineTo(10, HEIGHT - 30)
             .lineTo(HEIGHT - 10, HEIGHT - 30)
             .lineTo(HEIGHT - 10, 30)
-            frontHolderShape.holes.push(holePath);
+        frontHolderShape.holes.push(holePath);
         let frontHolderGeo = new THREE.ShapeGeometry(frontHolderShape);
         frontHolderGeo.center()
         let frontHolderMesh = new THREE.Mesh(frontHolderGeo, holderMaterial);
-        frontHolderMesh.position.set( -HEIGHT / 2, 0, 5);
+        frontHolderMesh.position.set(-HEIGHT / 2, 0, 5);
         filmObj3d.add(frontHolderMesh);
 
 
 
         // Add thr film reel
-        let reelMesh = this.getReelGeo(filmCanvas)
+        let reelMesh = await this.getReelGeo(filmCanvas)
         reelMesh.position.set(-HEIGHT * 6, 0, -HEIGHT * 2);
         filmObj3d.add(reelMesh);
 
@@ -195,7 +187,7 @@ export default class BlockchainModel extends Scene {
         return filmObj3d
     }
 
-    getReelGeo(filmCanvas) {
+    async getReelGeo(filmCanvas) {
 
         let reelObj3d = new THREE.Object3D();
         //filmObj3d.key = getRandomKey()
@@ -265,28 +257,25 @@ export default class BlockchainModel extends Scene {
         reelMesh2.position.set(0, 104, 0)
         reelObj3d.add(reelMesh2)
 
+        //  TODO
 
-
-
-        /* reelObj3d.rotateOnAxis(new THREE.Vector3(0, 1, 0).normalize(), 0.1);
-        //new TWEEN.Tween(reelObj3d.rotateY).easing(TWEEN.Easing.Quadratic.Out).to(-Math.PI/6, 1000).start().repeat(Infinity)
-        return reelObj3d
-
-        let waterTween = new TWEEN.Tween({ tx: 0 }).to({ tx: -Math.PI / 6 }, 1000);
-        waterTween.easing(TWEEN.Easing.Quadratic.Out);
-        waterTween.onUpdate(obj => {
-            // console.log('tx', obj.tx)
-            console.log(reelObj3d.rotateY)
-            reelObj3d.rotateY = obj
+        let reelTween = new TWEEN.Tween().to(null, 14000);
+        reelTween.easing(TWEEN.Easing.Quartic.InOut);//Quartic.InOut Sinusoidal.InOut
+        reelTween.onUpdate(i => {
+            let rad = 2 * Math.PI
+            reelMesh.rotation.z = i * rad
+            //reelMesh.rotation.z = i * Math.PI * 2 / 3
+            //reelObj3d.rotateY = rad * Math.PI /4
+            //reelObj3d.rotateY += 0.01
+            //reelObj3d.updateMatrix()
         });
-        waterTween.repeat(Infinity); // repeats forever
-        waterTween.start(); */
-        //labelTextMat, labelBackgroundMat, calloutBackgroundMat
+        reelTween.repeat(Infinity); // repeats forever
+        reelTween.start();
 
         let text = 'All blocks, right back the very first Genisis block, are recorded as an immutable datastore. If you star tat the Genisis block and replay all the transactions in the same order, you will arrive at the same memory state'
 
 
-        let labelObj3d = this.getLabelObj3d(text, font, 600, 20, labelTextMat, calloutBackgroundMat, labelTextMat, 'bottomRight')
+        let labelObj3d = await this.getLabelObj3d(text, 'helvetiker_regular', 600, 20, labelTextMat, calloutBackgroundMat, labelTextMat, 'bottomRight')
         labelObj3d.position.y = 300;
         reelObj3d.add(labelObj3d);
 
@@ -370,37 +359,96 @@ export default class BlockchainModel extends Scene {
         return canvas
     }
 
-    getFiberMesh() {
-        let points = []
-        points.push(new THREE.Vector3(-5000, 5000, -5000))
-        points.push(new THREE.Vector3(-300, 3000, -2000))
-        points.push(new THREE.Vector3(-500, 500, -500))
+    async getMemoryObj3d() {
+        let memmoryObj3d = new THREE.Object3D();
 
+        const memmoryMaterial = new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            opacity: 0.2,
+            side: THREE.DoubleSide,
+            transparent: true,
+        });
+        let accountsGeo = new THREE.PlaneGeometry(WIDTH * 2, HEIGHT * 20, 1, 1)
+        let accountsMesh = new THREE.Mesh(accountsGeo, memmoryMaterial);
+        accountsMesh.position.set(- 500, 0, 200)
+        memmoryObj3d.add(accountsMesh)
+
+        let key = this.getRandomKey()
+
+        let keyTextGeo = await this.makeTextLinesGeom('key', 'helvetiker_regular', 100, 20)
+        let keyTextMesh = new THREE.Mesh(keyTextGeo, labelTextMat)
+        keyTextMesh.position.set(WIDTH + 10, 0, 2)
+        memmoryObj3d.add(keyTextMesh)
+
+        return memmoryObj3d
+    }
+
+    getFibersObj3d() {
+
+        let fiberObj3d = new THREE.Object3D();
+
+        // Transactions in
+        let points1 = []
+        points1.push(new THREE.Vector3(-5000, 5000, 5000))
+        points1.push(new THREE.Vector3(-350, 3000, 1200))
+        points1.push(new THREE.Vector3(-350, 20, 1200))
+        points1.push(new THREE.Vector3(-250, 20, 740))
+        let fiberMesh1 = this.getFiberMesh(points1)
+        fiberObj3d.add(fiberMesh1);
+
+        // State queries in
+        /* let points2 = []
+        points2.push(new THREE.Vector3(5000, 5000, 5000))
+        points2.push(new THREE.Vector3(350, 3000, 1200))
+        points2.push(new THREE.Vector3(350, 20, 1200))
+        points2.push(new THREE.Vector3(250, 20, 740))
+        let fiberMesh2 = this.getFiberMesh(points2)
+        fiberObj3d.add(fiberMesh2); */
+
+        // State queries out
+        let points3 = []
+        points3.push(new THREE.Vector3(250, 20, 740))
+        points3.push(new THREE.Vector3(350, 20, 1200))
+        points3.push(new THREE.Vector3(350, 3000, 1200))
+        points3.push(new THREE.Vector3(5000, 5000, 5000))
+        let fiberMesh3 = this.getFiberMesh(points3)
+        fiberObj3d.add(fiberMesh3);
+
+        // blockchain write
+        let points4 = []
+        points4.push(new THREE.Vector3(0, 20, -740))
+        points4.push(new THREE.Vector3(0, 20, -1200))
+        let fiberMesh4 = this.getFiberMesh(points4)
+        fiberObj3d.add(fiberMesh4);
+
+        return fiberObj3d
+    }
+
+    getFiberMesh(points) {
+        let curve = new THREE.CatmullRomCurve3(points);
+        let length = curve.getLength()
 
         let filmCanvas = this.getElectronCanvas()
         let texture = new THREE.Texture(filmCanvas);
         texture.needsUpdate = true;
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set(50, 1);
+        texture.repeat.set(length / 200, 1);
 
         let material = new THREE.MeshBasicMaterial({
             map: texture,
-            //side: THREE.DoubleSide,
             transparent: true,
-            //wireframe: true
             color: 0xe0e0e0
 
         });
 
-        let curve = new THREE.CatmullRomCurve3(points);
-        let geometry = new THREE.TubeGeometry(curve, 10, 2, 8, false);
+        //console.log(legnth)
+        let geometry = new THREE.TubeGeometry(curve, 100, 2, 8, false);
         let mesh = new THREE.Mesh(geometry, material);
 
         let newTargetPos = new THREE.Vector2(-1, 0);
         new TWEEN.Tween(texture.offset).easing(TWEEN.Easing.Linear.None).to(newTargetPos, 500).start().repeat(Infinity)
         return mesh
-
     }
     getElectronCanvas() {
         let canvas = document.createElement("canvas");
@@ -416,6 +464,99 @@ export default class BlockchainModel extends Scene {
         ctx.fillRect(0, 0, 200, 32);
         return canvas
     }
+    async getServerObj3d() {
 
+        let serverObj3d = new THREE.Object3D();
+        //filmObj3d.key = getRandomKey()
+        serverObj3d.name = 'Server'
+
+        const cpuMaterial = new THREE.MeshPhongMaterial({ color: 0xe0e0e0 });
+
+        var extrudeSettings = { depth: WIDTH, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 5, bevelThickness: 5 };
+        let cpuRectShape = this.getRoundedRectShape(WIDTH, 20, 5)
+        var cpuGeometry = new THREE.ExtrudeBufferGeometry(cpuRectShape, extrudeSettings);
+        cpuGeometry.center()
+        let cpuMesh = new THREE.Mesh(cpuGeometry, cpuMaterial)
+        serverObj3d.add(cpuMesh)
+        var extrudeSettings2 = { depth: WIDTH - 100, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 5, bevelThickness: 5 };
+        let cpuRectShape2 = this.getRoundedRectShape(WIDTH - 50, 20, 5)
+        var cpuGeometry2 = new THREE.ExtrudeBufferGeometry(cpuRectShape2, extrudeSettings2);
+        cpuGeometry2.center()
+        let cpuMesh2 = new THREE.Mesh(cpuGeometry2, cpuMaterial)
+        cpuMesh2.position.set(0, 12, 0)
+        serverObj3d.add(cpuMesh2)
+
+        let cpuTextGeo = await this.makeTextLinesGeom('CPU', 'helvetiker_bold', 50, 40)
+        let cpuTextMesh = new THREE.Mesh(cpuTextGeo, labelTextMat)
+        cpuTextMesh.rotateX( - Math.PI / 2)
+        cpuTextMesh.position.set(-60, 35, -80)
+        serverObj3d.add(cpuTextMesh)
+
+
+        let memoryMaterial = new THREE.MeshPhongMaterial({ color: 0x404040 });
+        var memoryExtrudeSettings = { depth: WIDTH / 5, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 5, bevelThickness: 5 };
+        let memoryectShape = this.getRoundedRectShape(WIDTH / 2, 20, 5)
+        var memoryGeometry = new THREE.ExtrudeBufferGeometry(memoryectShape, memoryExtrudeSettings);
+        let memoryMesh = new THREE.Mesh(memoryGeometry, memoryMaterial)
+
+        let textMat = new THREE.MeshBasicMaterial({ color: 0x808080 });
+        let memTextGeo = await this.makeTextLinesGeom('RAM 4GB', 'helvetiker_regular', 50, 15)
+        let memTextMesh = new THREE.Mesh(memTextGeo, textMat)
+        memTextMesh.rotateX( - Math.PI / 2)
+
+        //var memoryGeometry = new THREE.BoxGeometry(WIDTH / 2, 10, WIDTH / 5, 32, 1);
+        for (let i = -4; i < 4; i++) {
+            let memoryMeshA = memoryMesh.clone()
+            memoryMeshA.position.set(-WIDTH - 20, 0, i * 150)
+            serverObj3d.add(memoryMeshA)
+
+            let memTextMeshA = memTextMesh.clone()
+            memTextMeshA.position.set(-WIDTH - 60, 18, i * 150 + 40)
+            serverObj3d.add(memTextMeshA)
+
+            let memoryMeshB = memoryMesh.clone()
+            memoryMeshB.position.set(+WIDTH + 20, 0, i * 150)
+            serverObj3d.add(memoryMeshB)
+
+            let memTextB = memTextMesh.clone()
+            memTextB.position.set(+WIDTH - 20, 18, i * 150 + 40)
+            serverObj3d.add(memTextB)
+        }
+
+        let connectorMaterial = new THREE.MeshPhongMaterial({ color: 0xD3D3D3 });
+        var connectorExtrudeSettings = { depth: 40, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 5, bevelThickness: 5 };
+        let connectorectShape = this.getRoundedRectShape(WIDTH / 4, 80, 5)
+        var connectorGeometry = new THREE.ExtrudeBufferGeometry(connectorectShape, connectorExtrudeSettings);
+        connectorGeometry.center()
+        let connectorMesh = new THREE.Mesh(connectorGeometry, connectorMaterial)
+
+
+        // connector front
+        connectorMesh.position.set(-250, 20, 740)
+        serverObj3d.add(connectorMesh)
+
+        //connector front 2
+        let connectorMesh2 = connectorMesh.clone()
+        connectorMesh2.position.set(250, 20, 740)
+        serverObj3d.add(connectorMesh2)
+
+        //connector back
+        let connectorMesh3 = connectorMesh.clone()
+        connectorMesh3.position.set(0, 20, -740)
+        serverObj3d.add(connectorMesh3)
+
+
+        let pcbMaterial = new THREE.MeshPhongMaterial({ color: 0x006600 });
+        var pcbExtrudeSettings = { depth: WIDTH * 4, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 5, bevelThickness: 5 };
+        let pcbectShape = this.getRoundedRectShape(WIDTH * 3, 10, 5)
+        var pcbGeometry = new THREE.ExtrudeBufferGeometry(pcbectShape, pcbExtrudeSettings);
+        pcbGeometry.center()
+        let pcbMesh = new THREE.Mesh(pcbGeometry, pcbMaterial)
+        pcbMesh.position.set(0, -25, 0)
+        serverObj3d.add(pcbMesh)
+
+        //serverObj3d.rotateX( Math.PI )
+        return serverObj3d
+    }
 
 }
