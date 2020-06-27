@@ -62,7 +62,10 @@ export default class BlockchainModel extends Scene {
         let blockchainModelObject3d = await this.blockchainModel()
         this.getScene().add(blockchainModelObject3d)
 
-        this.getHTMLGeometry()
+        let testGeom = await this.getHTMLGeometry('./test.html')
+        testGeom.position.set(0, HEIGHT * 2, 0)
+        this.getScene().add(testGeom)
+
 
     }
 
@@ -291,7 +294,7 @@ export default class BlockchainModel extends Scene {
         let text = 'All blocks, right back the very first Genisis block, are recorded as an immutable datastore. If you star tat the Genisis block and replay all the transactions in the same order, you will arrive at the same memory state'
 
 
-        let labelObj3d = await this.getLabelObj3d(text, 'helvetiker_regular', 600, 20, labelTextMat, calloutBackgroundMat, labelTextMat, 'bottomRight')
+        let labelObj3d = await this.getLabelObj3d(text, 'regular', 600, 20, labelTextMat, calloutBackgroundMat, labelTextMat, 'bottomRight')
         labelObj3d.position.y = 300;
         reelObj3d.add(labelObj3d);
 
@@ -396,7 +399,7 @@ export default class BlockchainModel extends Scene {
 
         let key = this.getRandomKey()
 
-        let keyTextGeo = await this.makeTextLinesGeom('key', 'helvetiker_regular', 100, 20)
+        let keyTextGeo = await this.makeTextLinesGeom('key', 'regular', 100, 20)
         let keyTextMesh = new THREE.Mesh(keyTextGeo, labelTextMat)
         //keyTextMesh.position.set(WIDTH + 10, 0, 2)
         memmoryObj3d.add(keyTextMesh)
@@ -525,7 +528,7 @@ export default class BlockchainModel extends Scene {
         serverObj3d.add(cpuMesh2)
 
         // Add text to CPU
-        let cpuTextGeo = await this.makeTextLinesGeom('CPU', 'helvetiker_bold', 50, 40)
+        let cpuTextGeo = await this.makeTextLinesGeom('CPU', 'bold', 50, 40)
         let cpuTextMesh = new THREE.Mesh(cpuTextGeo, labelTextMat)
         cpuTextMesh.rotateX(- Math.PI / 2)
         cpuTextMesh.position.set(-60, 35, -80)
@@ -541,7 +544,7 @@ export default class BlockchainModel extends Scene {
 
         // Add text to RAM
         let textMat = new THREE.MeshBasicMaterial({ color: 0x808080 });
-        let memTextGeo = await this.makeTextLinesGeom('RAM 4GB', 'helvetiker_regular', 50, 15)
+        let memTextGeo = await this.makeTextLinesGeom('RAM 4GB', 'regular', 50, 15)
         let memTextMesh = new THREE.Mesh(memTextGeo, textMat)
         memTextMesh.rotateX(- Math.PI / 2)
 
