@@ -46,7 +46,7 @@ export default class BlockchainModel extends Scene {
 
         const pipeMaterial = new THREE.MeshPhongMaterial({ color: 0xe0e0e0 });
         let chestahedronGeom = this.makeChestahedronGeom()
-        let chestahedronMesh = new THREE.Mesh(this.makeChestahedronGeom(chestahedronGeom), pipeMaterial)
+        let chestahedronMesh = new THREE.Mesh(chestahedronGeom, pipeMaterial)
         chestahedronMesh.position.set(0, HEIGHT * 5, 0)
         let chestTween = new TWEEN.Tween().to(null, 10000);
         chestTween.easing(TWEEN.Easing.Quartic.InOut);//Quartic.InOut Sinusoidal.InOut
@@ -63,8 +63,10 @@ export default class BlockchainModel extends Scene {
         this.getScene().add(blockchainModelObject3d)
 
         let testGeom = await this.getHTMLGeometry('./test.html')
-        testGeom.position.set(0, HEIGHT * 2, 0)
-        this.getScene().add(testGeom)
+        const testMat = new THREE.MeshPhongMaterial({ color: 0xffffff });
+        let testMesh = new THREE.Mesh(testGeom, testMat)
+        testMesh.position.set(0, HEIGHT , 0)
+        this.getScene().add(testMesh)
 
 
     }
