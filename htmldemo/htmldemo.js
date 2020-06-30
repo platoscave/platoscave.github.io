@@ -19,7 +19,7 @@ const TANSACTIONBALANCES = new THREE.Vector3(0, - HEIGHT * 5, 0)
 
 let font, labelTextMat, labelBackgroundMat, calloutBackgroundMat
 
-export default class BlockchainModel extends Scene {
+export default class HTMLDemo extends Scene {
 
     constructor() {
         super()
@@ -56,12 +56,32 @@ export default class BlockchainModel extends Scene {
         chestTween.repeat(Infinity); // repeats forever
         chestTween.start();
 
+        /* let testGeom = await this.getHTMLGeometry('./test.html')
+        const testMat = new THREE.MeshBasicMaterial({ color: 0x404040 });
+        let testMesh = new THREE.Mesh(testGeom, testMat)
+        testMesh.position.set(-500, 0, 0)
+        this.getScene().add(testMesh) */
 
-        this.getScene().add(chestahedronMesh)
-
-        let blockchainModelObject3d = await this.blockchainModel()
-        this.getScene().add(blockchainModelObject3d)
-
+        const htmlDoc = await this.importHtml("./test.html")
+        const boldFont = await this.importFont('bold')
+        //const monoFont = await this.importFont('mono')
+        const monoFont = null
+        const regularFont = await this.importFont('regular')
+        const borderMat = new THREE.MeshBasicMaterial({
+            color: 0xD7DADD,
+            transparent: true,
+            opacity: 0.7,
+            side: THREE.DoubleSide
+        });
+        const calloutBackgroundMat = new THREE.MeshBasicMaterial({
+            color: 0xF9E79F,
+            transparent: true,
+            opacity: 0.7,
+            side: THREE.DoubleSide
+        });
+        let labelObj3d = this.getLabelObj3d(htmlDoc, regularFont, boldFont, monoFont, 600, 20, calloutBackgroundMat, borderMat, 'bottomLeft')
+        labelObj3d.position.x = 500;
+        this.getScene().add(labelObj3d);
     }
 
     async blockchainModel() {
@@ -373,7 +393,7 @@ export default class BlockchainModel extends Scene {
 
         return canvas
     }
-    
+
     ////////////////////////////////////////////////////////////////////////
     // Draw three kinds of transparent memory
     //

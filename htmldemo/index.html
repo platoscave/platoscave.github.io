@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Three.js Macroeconomic Model</title>
+
+    <!--This is important to get a correct canvas size on mobile-->
+    <meta name='viewport' content='width=device-width, user-scalable=no' />
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /*
+              Next 2 paragraphs are a good practice.
+              In IE/Edge you have to provide the cursor images.
+            */
+        canvas {
+            cursor: grab;
+            cursor: -webkit-grab;
+            cursor: -moz-grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+            cursor: -webkit-grabbing;
+            cursor: -moz-grabbing;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <script  type="module" src="https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+    <script type="module">
+
+        import HTMLDemo from  "./htmldemo.js";
+        const model = new HTMLDemo()
+        model.init()
+
+    </script>
+
+</body>
+
+</html>
