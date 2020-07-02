@@ -5,17 +5,12 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.m
 //import * as TWEEN  from "https://cdn.jsdelivr.net/npm/es6-tween";
 // import TWEEN from "https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js";
 import Scene from "../lib/scene.js";
-import { Water } from "https://cdn.jsdelivr.net/npm/three@0.117.1/examples/jsm/objects/Water2.js";
-import { FaceNormalsHelper } from 'https://cdn.jsdelivr.net/npm/three@0.117.1/examples/jsm/helpers/FaceNormalsHelper.js';
-import { VertexNormalsHelper } from 'https://cdn.jsdelivr.net/npm/three@0.117.1/examples/jsm/helpers/VertexNormalsHelper.js';
+
 
 const WIDTH = 400;
 const HEIGHT = 200;
 const DEPTH = 200;
 
-const IDLEBALANCES = new THREE.Vector3(WIDTH * 1.25, HEIGHT * 2.5, 0)
-const FOREIGNBALANCES = new THREE.Vector3(WIDTH * 1.25, - HEIGHT * 2.5, 0)
-const TANSACTIONBALANCES = new THREE.Vector3(0, - HEIGHT * 5, 0)
 
 let font, labelTextMat, labelBackgroundMat, calloutBackgroundMat
 
@@ -80,7 +75,7 @@ export default class HTMLDemo extends Scene {
             side: THREE.DoubleSide
         });
         let labelObj3d = this.getLabelObj3d(htmlDoc, regularFont, boldFont, monoFont, 600, 20, calloutBackgroundMat, borderMat, 'bottomLeft')
-        labelObj3d.position.x = 500;
+        //labelObj3d.position.x = 500;
         this.getScene().add(labelObj3d);
     }
 
