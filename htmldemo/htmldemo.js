@@ -62,21 +62,57 @@ export default class HTMLDemo extends Scene {
         //const monoFont = await this.importFont('mono')
         const monoFont = null
         const regularFont = await this.importFont('regular')
-        const borderMat = new THREE.MeshBasicMaterial({
+
+
+        const borderMat1 = new THREE.MeshBasicMaterial({
+            color: 0x808080,
+            transparent: true,
+            opacity: 0.7,
+            side: THREE.DoubleSide
+        });
+        const calloutBackgroundMat1 = new THREE.MeshBasicMaterial({
+            color: 0x202020,
+            transparent: true,
+            opacity: 0.7,
+            side: THREE.DoubleSide
+        });
+        let labelObj3d1 = this.getLabelObj3d(htmlDoc, regularFont, boldFont, monoFont, 600, 20, calloutBackgroundMat1, borderMat1)
+        labelObj3d1.position.x = -500;
+        this.getScene().add(labelObj3d1);
+
+
+        const borderMat2 = new THREE.MeshBasicMaterial({
             color: 0xD7DADD,
             transparent: true,
             opacity: 0.7,
             side: THREE.DoubleSide
         });
-        const calloutBackgroundMat = new THREE.MeshBasicMaterial({
+        const calloutBackgroundMat2 = new THREE.MeshBasicMaterial({
             color: 0xF9E79F,
             transparent: true,
             opacity: 0.7,
             side: THREE.DoubleSide
         });
-        let labelObj3d = this.getLabelObj3d(htmlDoc, regularFont, boldFont, monoFont, 600, 20, calloutBackgroundMat, borderMat, 'bottomLeft')
-        //labelObj3d.position.x = 500;
-        this.getScene().add(labelObj3d);
+        let labelObj3d2 = this.getLabelObj3d(htmlDoc, regularFont, boldFont, monoFont, 600, 20, calloutBackgroundMat2, borderMat2)
+        labelObj3d2.position.x = 500;
+        this.getScene().add(labelObj3d2);
+
+
+        const borderMat3 = new THREE.MeshBasicMaterial({
+            color: 0xD7DADD,
+            transparent: true,
+            opacity: 0.7,
+            side: THREE.DoubleSide
+        });
+        const calloutBackgroundMat3 = new THREE.MeshBasicMaterial({
+            color: 0xF9E79F,
+            transparent: true,
+            opacity: 0.7,
+            side: THREE.DoubleSide
+        });
+        let labelObj3d3 = this.getLabelObj3d(htmlDoc, regularFont, boldFont, monoFont, 600, 20, calloutBackgroundMat3, borderMat3, 'bottomLeft')
+        labelObj3d3.position.z = -500;
+        this.getScene().add(labelObj3d3);
     }
 
     async blockchainModel() {
