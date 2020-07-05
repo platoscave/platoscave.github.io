@@ -5,9 +5,8 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.m
 //import * as TWEEN  from "https://cdn.jsdelivr.net/npm/es6-tween";
 // import TWEEN from "https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js";
 import Scene from "../lib/scene.js";
-import { Water } from "https://cdn.jsdelivr.net/npm/three@0.117.1/examples/jsm/objects/Water2.js";
-import { FaceNormalsHelper } from 'https://cdn.jsdelivr.net/npm/three@0.117.1/examples/jsm/helpers/FaceNormalsHelper.js';
-import { VertexNormalsHelper } from 'https://cdn.jsdelivr.net/npm/three@0.117.1/examples/jsm/helpers/VertexNormalsHelper.js';
+import HtmlObject3D from "../lib/htmlObject3d.js";
+
 
 const WIDTH = 400;
 const HEIGHT = 200;
