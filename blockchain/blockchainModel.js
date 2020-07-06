@@ -22,13 +22,12 @@ export default class BlockchainModel extends Scene {
     constructor() {
         super()
 
-        this.labelTextMat = new THREE.MeshBasicMaterial({
-            color: 0x404040,
-            side: THREE.DoubleSide
-        });
     }
 
     async init() {
+
+        // init will setup html styles and retreive fonts asynchronously
+        await super.init()
 
         const pipeMaterial = new THREE.MeshPhongMaterial({ color: 0xe0e0e0 });
         let chestahedronGeom = this.makeChestahedronGeom()
@@ -43,14 +42,6 @@ export default class BlockchainModel extends Scene {
         chestTween.start();
 
         this.getScene().add(chestahedronMesh)
-
-
-        this.fonts = {
-            regularFont: await this.importFont('regular'),
-            boldFont: await this.importFont('bold'),
-            monoFont: await this.importFont('regular')
-            //monoFont: await this.importFont('mono')
-        }
 
         let blockchainModelObject3d = await this.blockchainModel()
         this.getScene().add(blockchainModelObject3d)
@@ -269,11 +260,12 @@ export default class BlockchainModel extends Scene {
         reelTween.easing(TWEEN.Easing.Quartic.InOut);//Quartic.InOut Sinusoidal.InOut
         reelTween.onUpdate(i => {
             let rad = 2 * Math.PI / 14
-            reelMesh.rotation.z = i * rad
+            reelObj3d.rotationZ = i * rad
             //reelMesh.rotation.z = i * Math.PI * 2 / 3
             //reelObj3d.rotateY = rad * Math.PI /4
             //reelObj3d.rotateY += 0.01
             //reelObj3d.updateMatrix()
+            //reelObj3d.matrixWorldNeedsUpdate
         });
         reelTween.repeat(Infinity); // repeats forever
         reelTween.start();
@@ -284,7 +276,7 @@ export default class BlockchainModel extends Scene {
         let text = '<p>All blocks, right back the very first Genisis block, are recorded as an immutable datastore. If you star tat the Genisis block and replay all the transactions in the same order, you will arrive at the same memory state</p>'
 
 
-        let labelProps = {
+        /* let labelProps = {
             style: {     
                 'color': 0x404040,
                 'font-size': 10,
@@ -297,12 +289,11 @@ export default class BlockchainModel extends Scene {
                 callout: 'bottomRight'
             }
 
-        }
+        } */
 
 
-        let labelObj3d = new HtmlObject3D(htmlDoc, this.fonts, labelProps)
-        //labelObj3d.position.y = -300;
-        labelObj3d.position.set(0 , 1000, 0);
+        let labelObj3d = new HtmlObject3D(htmlDoc, this.fonts, this.labelProps)
+        labelObj3d.translateY(200);
         reelObj3d.add(labelObj3d);
 
         return reelObj3d
@@ -535,10 +526,12 @@ export default class BlockchainModel extends Scene {
         serverObj3d.add(cpuMesh2)
 
         // Add text to CPU
+
+        let cpuMat = new THREE.MeshBasicMaterial({ color: 0x404040 });
         let cpuShape = this.fonts.boldFont.generateShapes('CPU', 30);
         let cpuTextGeo = new THREE.ShapeGeometry(cpuShape);
         //let cpuTextGeo = await this.makeTextLinesGeom('CPU', 'bold', 50, 40)
-        let cpuTextMesh = new THREE.Mesh(cpuTextGeo, this.labelTextMat)
+        let cpuTextMesh = new THREE.Mesh(cpuTextGeo, cpuMat)
         cpuTextMesh.rotateX(- Math.PI / 2)
         cpuTextMesh.position.set(-60, 35, -80)
         serverObj3d.add(cpuTextMesh)

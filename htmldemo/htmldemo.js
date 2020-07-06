@@ -21,35 +21,41 @@ export default class HTMLDemo extends Scene {
 
     async init() {
 
+        // init will setup html styles and retreive fonts asynchronously
+        await super.init()
 
-        const htmlDoc = await this.importHtml("./test.html")
+        const testDoc = await this.importHtml("./test.html")
 
-        let fonts = {
-            regularFont: await this.importFont('regular'),
-            boldFont: await this.importFont('bold'),
-            monoFont: await this.importFont('regular')
-            //monoFont: await this.importFont('mono')
-        }
-
-        let labelProps = {
-            style: {     
-                'color': 0xf0f0f0,
-                'font-size': 10,
-                'width': 600
-            },
-            background: {
-                color: 0x121212,
-                opacity: 0.8,
-                boderColor: 0xf0f0f0,
-                callout: null
-            }
-        }
-
-        let labelObj3d1 = new HtmlObject3D(htmlDoc, fonts, labelProps)
-        //labelObj3d1.position.x = -500;
+        let labelObj3d1 = new HtmlObject3D(testDoc, this.fonts, this.darkPageProps)
+        labelObj3d1.rotateY = Math.PI / 6;
+        labelObj3d1.updateMatrix();
+        labelObj3d1.position.set (-1000, 0, 0 )
         this.getScene().add(labelObj3d1);
 
 
+        let labelObj3d2 = new HtmlObject3D(testDoc, this.fonts, this.lightPageProps)
+        labelObj3d2.rotateY = -Math.PI / 6;
+        labelObj3d2.updateMatrix();
+        labelObj3d2.position.set ( 1000, 0, 0 )
+        this.getScene().add(labelObj3d2);
+ 
+
+        let parser = new DOMParser();
+
+        let txt3 = `<h3>Simple Label</h3><p>This callout points to a simple label.</p>`
+        let calloutDoc = parser.parseFromString(txt3, 'text/html');
+        let labelObj3d3 = new HtmlObject3D(calloutDoc, this.fonts, this.calloutProps)
+        //labelObj3d3.position.set ( 0, 100, 0 )
+        //labelObj3d3.rotateY = -Math.PI / 6;
+        this.getScene().add(labelObj3d3);
+
+
+        let txt4 = `<p><b>Simple Label that spans Multiple Lines</b></p>`
+        let labelDoc = parser.parseFromString(txt4, 'text/html');
+        let labelObj3d4 = new HtmlObject3D(labelDoc, this.fonts, this.labelProps)
+        //labelObj3d3.position.set ( 1000, 0, 0 )
+        //labelObj3d3.rotateY = -Math.PI / 6;
+        this.getScene().add(labelObj3d4);
 
 
     }
