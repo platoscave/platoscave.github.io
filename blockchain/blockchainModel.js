@@ -272,27 +272,7 @@ export default class BlockchainModel extends Scene {
 
         // Add a callout
         const htmlDoc = await this.importHtml("./blockchain.html")
-
-        let text = '<p>All blocks, right back the very first Genisis block, are recorded as an immutable datastore. If you star tat the Genisis block and replay all the transactions in the same order, you will arrive at the same memory state</p>'
-
-
-        /* let labelProps = {
-            style: {     
-                'color': 0x404040,
-                'font-size': 10,
-                'width': 600
-            },
-            background: {
-                color: 0xF9E79F,
-                opacity: 0.8,
-                boderColor: 0x808080,
-                callout: 'bottomRight'
-            }
-
-        } */
-
-
-        let labelObj3d = new HtmlObject3D(htmlDoc, this.fonts, this.labelProps)
+        let labelObj3d = new HtmlObject3D(htmlDoc, this.fonts, this.calloutProps)
         labelObj3d.translateY(200);
         reelObj3d.add(labelObj3d);
 

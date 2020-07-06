@@ -2,6 +2,7 @@
 
 //import TWEEN from "../lib/tween.js/src/Tween.js";
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.module.js";
+import HtmlObject3D from "../lib/htmlObject3d.js";
 //import * as TWEEN  from "https://cdn.jsdelivr.net/npm/es6-tween";
 // import TWEEN from "https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js";
 import Scene from "../lib/scene.js";
@@ -24,7 +25,10 @@ export default class MacoeconomyModel extends Scene {
 
     }
 
-    init() {
+    async init() {
+
+        // init will setup html styles and retreive fonts asynchronously
+        await super.init()
 
         const pipeMaterial = new THREE.MeshPhongMaterial({color: 0xe0e0e0 });
         let chestahedronMesh = new THREE.Mesh(this.makeChestahedronGeom(), pipeMaterial)
@@ -181,7 +185,10 @@ export default class MacoeconomyModel extends Scene {
 
         tankObject3d.add(waterMesh);
 
-        let labelObj3d = this.getLabelObj3d(text, font, WIDTH, 30, textMat, backgroundMat, textMat)
+        let parser = new DOMParser()
+        let labelDoc = parser.parseFromString('<p>'+text+'</p>', 'text/html');
+        let labelObj3d = new HtmlObject3D(labelDoc.body, this.fonts, this.labelProps)
+        //let labelObj3d = this.getLabelObj3d(text, font, WIDTH, 30, textMat, backgroundMat, textMat)
         labelObj3d.position.set(0, - HEIGHT / 4, DEPTH / 2 + 20)
         tankObject3d.add(labelObj3d);
 
@@ -290,25 +297,36 @@ export default class MacoeconomyModel extends Scene {
 
         // Add Labels
 
-        let incomeTextMesh = this.getLabelObj3d('Income (Y)', font, WIDTH, 30, textMat, backgroundMat, textMat)
-        incomeTextMesh.position.set(- WIDTH, TOP, 50)
-        object3d.add(incomeTextMesh);
+        let parser = new DOMParser()
+        let incomeLabelDoc = parser.parseFromString('<p>Income (Y)</p>', 'text/html');
+        let incomeLabelObj3d = new HtmlObject3D(incomeLabelDoc.body, this.fonts, this.labelProps)
+        //let incomeTextMesh = this.getLabelObj3d('Income (Y)', font, WIDTH, 30, textMat, backgroundMat, textMat)
+        incomeLabelObj3d.position.set(- WIDTH, TOP, 50)
+        object3d.add(incomeLabelObj3d);
 
-        let disposeTextMesh = this.getLabelObj3d('Disposable Income', font, WIDTH, 30, textMat, backgroundMat, textMat)
-        disposeTextMesh.position.set(0, IDLEBALANCES.y + HEIGHT * 2, 50)
-        object3d.add(disposeTextMesh);
+        let disposeLabelDoc = parser.parseFromString('<p>Disposable Income</p>', 'text/html');
+        let disposeLabelObj3d = new HtmlObject3D(disposeLabelDoc.body, this.fonts, this.labelProps)     
+        //let disposeTextMesh = this.getLabelObj3d('Disposable Income', font, WIDTH, 30, textMat, backgroundMat, textMat)
+        disposeLabelObj3d.position.set(0, IDLEBALANCES.y + HEIGHT * 2, 50)
+        object3d.add(disposeLabelObj3d);
 
-        let consumptioTextMesh = this.getLabelObj3d('Consumption Spending (C)', font, WIDTH, 30, textMat, backgroundMat, textMat)
-        consumptioTextMesh.position.set(0, IDLEBALANCES.y, 50)
-        object3d.add(consumptioTextMesh);
+        let consumptionLabelDoc = parser.parseFromString('<p>Consumption Spending (C)</p>', 'text/html');
+        let consumptionLabelObj3d = new HtmlObject3D(consumptionLabelDoc.body, this.fonts, this.labelProps)
+        //let consumptioTextMesh = this.getLabelObj3d('Consumption Spending (C)', font, WIDTH, 30, textMat, backgroundMat, textMat)
+        consumptionLabelObj3d.position.set(0, IDLEBALANCES.y, 50)
+        object3d.add(consumptionLabelObj3d);
 
-        let domesticTextMesh = this.getLabelObj3d('Domestic Spending', font, WIDTH, 30, textMat, backgroundMat, textMat)
-        domesticTextMesh.position.set(0, 0, 50)
-        object3d.add(domesticTextMesh);
+        let domesticLabelDoc = parser.parseFromString('<p>Domestic Spending</p>', 'text/html');
+        let domesticLabelObj3d = new HtmlObject3D(domesticLabelDoc.body, this.fonts, this.labelProps)
+        //let domesticTextMesh = this.getLabelObj3d('Domestic Spending', font, WIDTH, 30, textMat, backgroundMat, textMat)
+        domesticLabelObj3d.position.set(0, 0, 50)
+        object3d.add(domesticLabelObj3d);
 
-        let totalExpTextMesh = this.getLabelObj3d('Total Expenditures (AE)', font, WIDTH, 30, textMat, backgroundMat, textMat)
-        totalExpTextMesh.position.set(0, FOREIGNBALANCES.y, 50)
-        object3d.add(totalExpTextMesh);
+        let totalExpLabelDoc = parser.parseFromString('<p>Total Expenditures (AE)</p>', 'text/html');
+        let totalExpLabelObj3d = new HtmlObject3D(totalExpLabelDoc.body, this.fonts, this.labelProps)
+        //let totalExpTextMesh = this.getLabelObj3d('Total Expenditures (AE)', font, WIDTH, 30, textMat, backgroundMat, textMat)
+        totalExpLabelObj3d.position.set(0, FOREIGNBALANCES.y, 50)
+        object3d.add(totalExpLabelObj3d);
 
         return object3d
     }
@@ -378,9 +396,14 @@ export default class MacoeconomyModel extends Scene {
         object3d.add(currenciesObj3d);
 
         // Add Labels
-        let textMesh = this.getLabelObj3d(text, font, WIDTH, 30, textMat, backgroundMat, textMat)
-        textMesh.position.set(-WIDTH / 2, HEIGHT * 1.2, 50)
-        object3d.add(textMesh);
+
+
+        let parser = new DOMParser()
+        let labelDoc = parser.parseFromString('<p>'+text+'</p>', 'text/html');
+        let labelObj3d = new HtmlObject3D(labelDoc.body, this.fonts, this.labelProps)
+        //let textMesh = this.getLabelObj3d(text, font, WIDTH, 30, textMat, backgroundMat, textMat)
+        labelObj3d.position.set(-WIDTH / 2, HEIGHT * 1.2, 50)
+        object3d.add(labelObj3d);
 
         return object3d
     }
@@ -404,9 +427,12 @@ export default class MacoeconomyModel extends Scene {
         object3d.add(currenciesObj3d);
 
         // Add Labels
-        let textMesh = this.getLabelObj3d(text, font, WIDTH, 30, textMat, backgroundMat, textMat)
-        textMesh.position.set(-WIDTH / 2, - HEIGHT * 1.2, 50)
-        object3d.add(textMesh);
+        let parser = new DOMParser()
+        let labelDoc = parser.parseFromString('<p>'+text+'</p>', 'text/html');
+        let labelObj3d = new HtmlObject3D(labelDoc.body, this.fonts, this.labelProps)
+        //let textMesh = this.getLabelObj3d(text, font, WIDTH, 30, textMat, backgroundMat, textMat)
+        labelObj3d.position.set(-WIDTH / 2, - HEIGHT * 1.2, 50)
+        object3d.add(labelObj3d);
 
         return object3d
     }
@@ -431,13 +457,18 @@ export default class MacoeconomyModel extends Scene {
         object3d.add(currenciesObj3d);
 
         // Add Labels
-        let taxTextMesh = this.getLabelObj3d('Tax (T)', font, WIDTH, 30, textMat, backgroundMat, textMat)
-        taxTextMesh.position.set(- WIDTH / 2, HEIGHT * 2.8, 50)
-        object3d.add(taxTextMesh);
+        let parser = new DOMParser()
+        let taxLabelDoc = parser.parseFromString('<p>Tax (T)</p>', 'text/html');
+        let taxLabelObj3d = new HtmlObject3D(taxLabelDoc.body, this.fonts, this.labelProps)
+        //let taxTextMesh = this.getLabelObj3d('Tax (T)', font, WIDTH, 30, textMat, backgroundMat, textMat)
+        taxLabelObj3d.position.set(- WIDTH / 2, HEIGHT * 2.8, 50)
+        object3d.add(taxLabelObj3d);
 
-        let govTextMesh = this.getLabelObj3d('Government Spending (G)', font, WIDTH, 30, textMat, backgroundMat, textMat)
-        govTextMesh.position.set(- WIDTH / 2, - HEIGHT * 1.2, 50)
-        object3d.add(govTextMesh);
+        let govLabelDoc = parser.parseFromString('<p>Government Spending (G)</p>', 'text/html');
+        let govLabelObj3d = new HtmlObject3D(govLabelDoc.body, this.fonts, this.labelProps)
+        //let govTextMesh = this.getLabelObj3d('Government Spending (G)', font, WIDTH, 30, textMat, backgroundMat, textMat)
+        govLabelObj3d.position.set(- WIDTH / 2, - HEIGHT * 1.2, 50)
+        object3d.add(govLabelObj3d);
 
         return object3d
     }
