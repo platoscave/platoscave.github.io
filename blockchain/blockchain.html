@@ -1,0 +1,72 @@
+<h1>Three.js HTML Renderer</h1>
+<h2>Header level 2</h2>
+<p>This is paragraph that is so long that it may need line wrapping. This sentence demonstrates the use of
+    <strong>bold</strong>, <em>italic</em>, <code>monospaced</code>, <span
+        style="text-decoration: underline;">underline</span> and <span style="text-decoration: line-through;">strike
+        through</span> text. We can also do&nbsp;<span style="color: #ff0000;">colors</span> as <span
+        style="color: #00ff00;">demonstrated</span> in this <span style="color: #0000ff;">sentence</span>. Do we need
+    text <span style="background-color: #ffff99;">background</span> colors?</p>
+<p>This is an unordered list looks like:</p>
+<ul>
+    <li>We have the first list item. This item has been made especially long to demonstrate the use of left padding.</li>
+    <li>And then the second one.</li>
+</ul>
+<p>And then, wait for it... the ordered list:</p>
+<ol>
+    <li>We have the first list item.</li>
+    <li>And then the second one.</li>
+</ol>
+<p>Finaly we demonstrate the use of a table. This table lists some of the HTML tags that we use and their default
+    styles.</p>
+<table>
+    <tbody>
+        <tr>
+            <th>HTML Tag</th>
+            <th>Default Style</th>
+        </tr>
+        <tr>
+            <td>h1</td>
+            <td>
+                <pre>{
+    'display': 'block',
+    'font-size': 2 * em,
+    'margin-top': 0.67 * em,
+    'margin-bottom': 0.67 * em,
+    'margin-left': 0,
+    'margin-right': 0,
+    'font-weight': 'bold'
+}</pre>
+            </td>
+        </tr>
+        <tr>
+            <td>h2</td>
+            <td>
+                <pre>{
+    'display': 'block',
+    'font-size': 1.5 * em,
+    'margin-top': 0.83 * em,
+    'margin-bottom': 0.83 * em,
+    'margin-left': 0,
+    'margin-right': 0,
+    'font-weight': 'bold'
+}</pre>
+            </td>
+        </tr>
+        <tr>
+            <td>p</td>
+            <td>
+                <pre>{
+    'display': 'block',
+    'margin-top': 1 * em,
+    'margin-bottom': 1 * em,
+    'margin-left': 0,
+    'margin-right': 0,
+}</pre>
+
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p>In future we hope to to be able to render images with wrap-arround text.</p>
+<p>Also, we would like to be able to provide custom css but css is hard to do. Three.SVGLoader makes it look so easy.
+</p>

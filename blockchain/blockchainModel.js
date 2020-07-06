@@ -16,27 +16,14 @@ const IDLEBALANCES = new THREE.Vector3(WIDTH * 1.25, HEIGHT * 2.5, 0)
 const FOREIGNBALANCES = new THREE.Vector3(WIDTH * 1.25, - HEIGHT * 2.5, 0)
 const TANSACTIONBALANCES = new THREE.Vector3(0, - HEIGHT * 5, 0)
 
-let font, labelTextMat, labelBackgroundMat, calloutBackgroundMat
 
 export default class BlockchainModel extends Scene {
 
     constructor() {
         super()
 
-        labelTextMat = new THREE.MeshBasicMaterial({
+        this.labelTextMat = new THREE.MeshBasicMaterial({
             color: 0x404040,
-            side: THREE.DoubleSide
-        });
-        labelBackgroundMat = new THREE.MeshBasicMaterial({
-            color: 0xD7DADD,
-            transparent: true,
-            opacity: 0.7,
-            side: THREE.DoubleSide
-        });
-        calloutBackgroundMat = new THREE.MeshBasicMaterial({
-            color: 0xF9E79F,
-            transparent: true,
-            opacity: 0.7,
             side: THREE.DoubleSide
         });
     }
@@ -55,8 +42,15 @@ export default class BlockchainModel extends Scene {
         chestTween.repeat(Infinity); // repeats forever
         chestTween.start();
 
-
         this.getScene().add(chestahedronMesh)
+
+
+        this.fonts = {
+            regularFont: await this.importFont('regular'),
+            boldFont: await this.importFont('bold'),
+            monoFont: await this.importFont('regular')
+            //monoFont: await this.importFont('mono')
+        }
 
         let blockchainModelObject3d = await this.blockchainModel()
         this.getScene().add(blockchainModelObject3d)
@@ -285,11 +279,30 @@ export default class BlockchainModel extends Scene {
         reelTween.start();
 
         // Add a callout
-        let text = 'All blocks, right back the very first Genisis block, are recorded as an immutable datastore. If you star tat the Genisis block and replay all the transactions in the same order, you will arrive at the same memory state'
+        const htmlDoc = await this.importHtml("./blockchain.html")
+
+        let text = '<p>All blocks, right back the very first Genisis block, are recorded as an immutable datastore. If you star tat the Genisis block and replay all the transactions in the same order, you will arrive at the same memory state</p>'
 
 
-        let labelObj3d = await this.getLabelObj3d(text, 'regular', 600, 20, labelTextMat, calloutBackgroundMat, labelTextMat, 'bottomRight')
-        labelObj3d.position.y = 300;
+        let labelProps = {
+            style: {     
+                'color': 0x404040,
+                'font-size': 10,
+                'width': 600
+            },
+            background: {
+                color: 0xF9E79F,
+                opacity: 0.8,
+                boderColor: 0x808080,
+                callout: 'bottomRight'
+            }
+
+        }
+
+
+        let labelObj3d = new HtmlObject3D(htmlDoc, this.fonts, labelProps)
+        //labelObj3d.position.y = -300;
+        labelObj3d.position.set(0 , 1000, 0);
         reelObj3d.add(labelObj3d);
 
         return reelObj3d
@@ -391,12 +404,12 @@ export default class BlockchainModel extends Scene {
         //accountsMesh.position.set(- 1000, 0, 0)
         memmoryObj3d.add(accountsMesh)
 
-        let key = this.getRandomKey()
+        /* let key = this.getRandomKey()
 
         let keyTextGeo = await this.makeTextLinesGeom('key', 'regular', 100, 20)
-        let keyTextMesh = new THREE.Mesh(keyTextGeo, labelTextMat)
+        let keyTextMesh = new THREE.Mesh(keyTextGeo, this.labelTextMat)
         //keyTextMesh.position.set(WIDTH + 10, 0, 2)
-        memmoryObj3d.add(keyTextMesh)
+        memmoryObj3d.add(keyTextMesh) */
 
         return memmoryObj3d
     }
@@ -522,8 +535,10 @@ export default class BlockchainModel extends Scene {
         serverObj3d.add(cpuMesh2)
 
         // Add text to CPU
-        let cpuTextGeo = await this.makeTextLinesGeom('CPU', 'bold', 50, 40)
-        let cpuTextMesh = new THREE.Mesh(cpuTextGeo, labelTextMat)
+        let cpuShape = this.fonts.boldFont.generateShapes('CPU', 30);
+        let cpuTextGeo = new THREE.ShapeGeometry(cpuShape);
+        //let cpuTextGeo = await this.makeTextLinesGeom('CPU', 'bold', 50, 40)
+        let cpuTextMesh = new THREE.Mesh(cpuTextGeo, this.labelTextMat)
         cpuTextMesh.rotateX(- Math.PI / 2)
         cpuTextMesh.position.set(-60, 35, -80)
         serverObj3d.add(cpuTextMesh)
@@ -538,7 +553,9 @@ export default class BlockchainModel extends Scene {
 
         // Add text to RAM
         let textMat = new THREE.MeshBasicMaterial({ color: 0x808080 });
-        let memTextGeo = await this.makeTextLinesGeom('RAM 4GB', 'regular', 50, 15)
+        let memTextShape = this.fonts.boldFont.generateShapes('RAM 4GB', 10);
+        let memTextGeo = new THREE.ShapeGeometry(memTextShape);
+        //let memTextGeo = await this.makeTextLinesGeom('RAM 4GB', 'regular', 50, 15)
         let memTextMesh = new THREE.Mesh(memTextGeo, textMat)
         memTextMesh.rotateX(- Math.PI / 2)
 
@@ -548,7 +565,7 @@ export default class BlockchainModel extends Scene {
             serverObj3d.add(memoryMeshA)
 
             let memTextMeshA = memTextMesh.clone()
-            memTextMeshA.position.set(-WIDTH - 60, 18, i * 150 + 40)
+            memTextMeshA.position.set(-WIDTH - 100, 18, i * 150 + 20)
             serverObj3d.add(memTextMeshA)
 
             let memoryMeshB = memoryMesh.clone()
@@ -556,7 +573,7 @@ export default class BlockchainModel extends Scene {
             serverObj3d.add(memoryMeshB)
 
             let memTextB = memTextMesh.clone()
-            memTextB.position.set(+WIDTH - 20, 18, i * 150 + 40)
+            memTextB.position.set(+WIDTH - 60, 18, i * 150 + 20)
             serverObj3d.add(memTextB)
         }
 

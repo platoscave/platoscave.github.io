@@ -30,20 +30,22 @@ export default class HTMLDemo extends Scene {
             monoFont: await this.importFont('regular')
             //monoFont: await this.importFont('mono')
         }
-        let style = {     
-            'color': 0xf0f0f0,
-            'font-size': 10,
-            'width': 600
+
+        let labelProps = {
+            style: {     
+                'color': 0xf0f0f0,
+                'font-size': 10,
+                'width': 600
+            },
+            background: {
+                color: 0x121212,
+                opacity: 0.8,
+                boderColor: 0xf0f0f0,
+                callout: null
+            }
         }
 
-        let background = {
-            backgroundColor: 0x121212,
-            backgroundOpacity: 0.8,
-            borderColor: 0x808080,
-            callout: null
-        }
-
-        let labelObj3d1 = new HtmlObject3D(htmlDoc, fonts, style, background)
+        let labelObj3d1 = new HtmlObject3D(htmlDoc, fonts, labelProps)
         //labelObj3d1.position.x = -500;
         this.getScene().add(labelObj3d1);
 
