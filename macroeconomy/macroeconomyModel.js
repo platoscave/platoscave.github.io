@@ -33,7 +33,7 @@ export default class MacoeconomyModel extends Scene {
         const pipeMaterial = new THREE.MeshPhongMaterial({color: 0xe0e0e0 });
         let chestahedronMesh = new THREE.Mesh(this.makeChestahedronGeom(), pipeMaterial)
         chestahedronMesh.position.set(0, HEIGHT * 10, 0)
-        this.getScene().add(chestahedronMesh)
+        this.scene.add(chestahedronMesh)
 
 
         textMat = new THREE.MeshBasicMaterial({
@@ -54,7 +54,7 @@ export default class MacoeconomyModel extends Scene {
             font = newFont
 
             let macroEconomicModelObject3d = this.macroEconomicModel()
-            this.getScene().add(macroEconomicModelObject3d)
+            this.scene.add(macroEconomicModelObject3d)
 
         })
 
@@ -162,7 +162,7 @@ export default class MacoeconomyModel extends Scene {
         let tankMesh = new THREE.Mesh(tankGeometry, materials);
 
         tankObject3d.add(tankMesh);
-        this.pushSelectableMeshArr(tankMesh)
+        this.selectableMeshArr.push(tankMesh)
 
 
 

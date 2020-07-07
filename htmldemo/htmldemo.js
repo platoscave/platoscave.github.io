@@ -30,14 +30,18 @@ export default class HTMLDemo extends Scene {
         labelObj3d1.rotateY = Math.PI / 6;
         labelObj3d1.updateMatrix();
         labelObj3d1.position.set (-1000, 0, 0 )
-        this.getScene().add(labelObj3d1);
+        this.scene.add(labelObj3d1);
+        labelObj3d1.key = 'darkPage'
+        this.selectableMeshArr.push(labelObj3d1.getBackgroundMesh())
 
 
         let labelObj3d2 = new HtmlObject3D(testDoc.body, this.fonts, this.lightPageProps)
         labelObj3d2.rotateY = -Math.PI / 6;
         labelObj3d2.updateMatrix();
         labelObj3d2.position.set ( 1000, 0, 0 )
-        this.getScene().add(labelObj3d2);
+        this.scene.add(labelObj3d2);
+        labelObj3d2.key = 'lightPage'
+        this.selectableMeshArr.push(labelObj3d2.getBackgroundMesh())
  
 
         let parser = new DOMParser();
@@ -47,7 +51,9 @@ export default class HTMLDemo extends Scene {
         let labelObj3d3 = new HtmlObject3D(calloutDoc.body, this.fonts, this.calloutProps)
         //labelObj3d3.position.set ( 0, 100, 0 )
         //labelObj3d3.rotateY = -Math.PI / 6;
-        this.getScene().add(labelObj3d3);
+        this.scene.add(labelObj3d3);
+        labelObj3d3.key = 'callout'
+        this.selectableMeshArr.push(labelObj3d3.getBackgroundMesh())
 
 
         let txt4 = `<p><b>Simple Label that spans Multiple Lines</b></p>`
@@ -55,7 +61,9 @@ export default class HTMLDemo extends Scene {
         let labelObj3d4 = new HtmlObject3D(labelDoc.body, this.fonts, this.labelProps)
         //labelObj3d3.position.set ( 1000, 0, 0 )
         //labelObj3d3.rotateY = -Math.PI / 6;
-        this.getScene().add(labelObj3d4);
+        this.scene.add(labelObj3d4);
+        labelObj3d4.key = 'label'
+        this.selectableMeshArr.push(labelObj3d4.getBackgroundMesh())
 
 
     }

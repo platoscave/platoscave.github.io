@@ -41,10 +41,10 @@ export default class BlockchainModel extends Scene {
         chestTween.repeat(Infinity); // repeats forever
         chestTween.start();
 
-        this.getScene().add(chestahedronMesh)
+        this.scene.add(chestahedronMesh)
 
         let blockchainModelObject3d = await this.blockchainModel()
-        this.getScene().add(blockchainModelObject3d)
+        this.scene.add(blockchainModelObject3d)
 
     }
 
