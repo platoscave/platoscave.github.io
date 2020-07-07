@@ -34,7 +34,7 @@ export default class HTMLDemo extends Scene {
         labelObj3d1.key = 'darkPage'
         this.selectableMeshArr.push(labelObj3d1.getBackgroundMesh())
 
-
+/* 
         let labelObj3d2 = new HtmlObject3D(testDoc.body, this.fonts, this.lightPageProps)
         labelObj3d2.rotateY = -Math.PI / 6;
         labelObj3d2.updateMatrix();
@@ -63,7 +63,7 @@ export default class HTMLDemo extends Scene {
         //labelObj3d3.rotateY = -Math.PI / 6;
         this.scene.add(labelObj3d4);
         labelObj3d4.key = 'label'
-        this.selectableMeshArr.push(labelObj3d4.getBackgroundMesh())
+        this.selectableMeshArr.push(labelObj3d4.getBackgroundMesh()) */
 
 
     }
