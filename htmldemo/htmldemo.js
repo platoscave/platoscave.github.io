@@ -46,7 +46,7 @@ export default class HTMLDemo extends Scene {
  
 
 
-        let txt3 = `<b>Simple Label</b><t>This callout points to a simple label.</t>`
+        let txt3 = `<div><b>Simple Label</b> </div><div>This callout points to a simple label.</div>`
         let labelObj3d3 = new HtmlObject3D(txt3, this.fonts, this.calloutProps)
         labelObj3d3.translateY(20)
         //labelObj3d3.rotateY = -Math.PI / 6;
@@ -55,7 +55,7 @@ export default class HTMLDemo extends Scene {
         this.selectableMeshArr.push(labelObj3d3.getBackgroundMesh()) 
 
 
-        let txt4 = `<b>Simple Label that spans Multiple Lines. <br>Simple Label that spans Multiple Lines</b>`
+        let txt4 = `<div>Simple Label that spans Multiple Lines.</div>`
         let labelObj3d4 = new HtmlObject3D(txt4, this.fonts, this.labelProps)
         //labelObj3d3.position.set ( 1000, 0, 0 )
         //labelObj3d3.rotateY = -Math.PI / 6;
