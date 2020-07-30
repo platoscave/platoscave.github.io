@@ -29,17 +29,25 @@ export default class MacoeconomyModel extends Scene {
         // init will setup html styles and retreive fonts asynchronously
         await super.init()
 
-        const pipeMaterial = new THREE.MeshPhongMaterial({color: 0xe0e0e0 });
-        let chestahedronMesh = new THREE.Mesh(this.makeChestahedronGeom(), pipeMaterial)
-        chestahedronMesh.position.set(0, HEIGHT * 10, 0)
-        this.scene.add(chestahedronMesh)
-
         this.labelProps.style['font-size'] = 30
         this.labelProps.style['width'] = 300
 
 
         let macroEconomicModelObject3d = this.macroEconomicModel()
         this.scene.add(macroEconomicModelObject3d)
+
+        var img = new THREE.MeshBasicMaterial({ //CHANGED to MeshBasicMaterial
+            map:THREE.ImageUtils.loadTexture('moniac.png'),
+            side: THREE.DoubleSide
+        });
+        img.map.needsUpdate = true; //ADDED
+        // plane
+        var plane = new THREE.Mesh(new THREE.PlaneGeometry(2000, 3000),img);
+        plane.key = this.getRandomKey()
+        this.selectableMeshArr.push(plane)
+        plane.translateX( -WIDTH * 7)
+        plane.overdraw = true;
+        this.scene.add(plane);
 
     }
 
@@ -113,19 +121,8 @@ export default class MacoeconomyModel extends Scene {
 
     getTankObject3D(text) {
 
-        const getRandomKey = () => {
-            // base32 encoded 64-bit integers. This means they are limited to the characters a-z, 1-5, and '.' for the first 12 characters.
-            // If there is a 13th character then it is restricted to the first 16 characters ('.' and a-p).
-            var characters = 'abcdefghijklmnopqrstuvwxyz12345'
-            var randomKey = ''
-            for (var i = 0; i < 12; i++) {
-                randomKey += characters.charAt(Math.floor(Math.random() * characters.length))
-            }
-            return randomKey
-        }
-
         let tankObject3d = new THREE.Object3D();
-        tankObject3d.key = getRandomKey()
+        tankObject3d.key = this.getRandomKey()
         tankObject3d.name = text
 
 
