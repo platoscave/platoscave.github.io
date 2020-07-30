@@ -296,7 +296,7 @@ export default class MacoeconomyModel extends Scene {
 
         let domesticLabelDoc = '<div>Domestic Spending</div>'
         let domesticLabelObj3d = new HtmlObject3D(domesticLabelDoc, this.fonts, this.labelProps)
-        domesticLabelObj3d.position.set(0, 0, 50)
+        //domesticLabelObj3d.position.set(0, 0, 50)
         object3d.add(domesticLabelObj3d);
 
         let totalExpLabelDoc = '<div>Total Expenditures (AE)</div>'
