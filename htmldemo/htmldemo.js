@@ -24,8 +24,7 @@ export default class HTMLDemo extends Scene {
         // init will setup html styles and retreive fonts asynchronously
         await super.init()
 
-        const testStr = await this.importHtml("./test.html")
-
+        const testStr = await fetch('./test.html').then(response => response.text())
         let labelObj3d1 = new HtmlObject3D(testStr, this.fonts, this.darkPageProps)
         labelObj3d1.translateX (-1000)
         let quaternion = new THREE.Quaternion();
@@ -33,15 +32,14 @@ export default class HTMLDemo extends Scene {
         labelObj3d1.quaternion.copy(quaternion)
         this.scene.add(labelObj3d1);
         labelObj3d1.key = 'darkPage'
-        this.selectableMeshArr.push(labelObj3d1.getBackgroundMesh())
+        this.selectableMeshArr.push(labelObj3d1.backgroundMesh)
 
-        const wikiStr = await this.importHtml("https://en.wikipedia.org/api/rest_v1/page/summary/Three.js")
-        var wikiObj = JSON.parse(wikiStr)
+        const wikiObj = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/Three.js').then(response => response.json())
         let labelObj3d2 = new HtmlObject3D(wikiObj.extract_html, this.fonts, this.lightPageProps)
         labelObj3d2.position.set ( 0, 500, 0 )
         this.scene.add(labelObj3d2);
         labelObj3d2.key = 'lightPage'
-        this.selectableMeshArr.push(labelObj3d2.getBackgroundMesh())
+        this.selectableMeshArr.push(labelObj3d2.backgroundMesh)
  
 
 
@@ -50,23 +48,22 @@ export default class HTMLDemo extends Scene {
         labelObj3d3.translateY(20)
         this.scene.add(labelObj3d3);
         labelObj3d3.key = 'callout'
-        this.selectableMeshArr.push(labelObj3d3.getBackgroundMesh()) 
+        this.selectableMeshArr.push(labelObj3d3.backgroundMesh) 
 
 
         let txt4 = `<div>Simple Label that spans Multiple Lines.</div>`
         let labelObj3d4 = new HtmlObject3D(txt4, this.fonts, this.labelProps)
         this.scene.add(labelObj3d4);
         labelObj3d4.key = 'label'
-        this.selectableMeshArr.push(labelObj3d4.getBackgroundMesh())
+        this.selectableMeshArr.push(labelObj3d4.backgroundMesh)
 
 
-        const url = 'https://eos.greymass.com/v1/chain/get_account';
         const options = {
             method : "POST",
             body: ' { "account_name": "eosio.token"} '
         }
-        const accountsJson = await fetch(url, options)
-        .then(response => response.json()) // .text(), etc.
+        const accountsJson = await fetch('https://eos.greymass.com/v1/chain/get_account', options)
+        .then(response => response.json())
         .catch((e) => {})
 
         const accountStr = JSON.stringify(accountsJson, null, 4)
@@ -79,7 +76,8 @@ export default class HTMLDemo extends Scene {
         labelObj3d5.quaternion.copy(quaternion1)
         this.scene.add(labelObj3d5);
         labelObj3d5.key = 'accounts'
-        this.selectableMeshArr.push(labelObj3d5.getBackgroundMesh())
+        this.selectableMeshArr.push(labelObj3d5.backgroundMesh)
+
     }
 
 

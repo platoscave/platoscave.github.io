@@ -4,6 +4,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.m
 //import TWEEN from "../lib/tween.js/src/Tween.js";
 //import * as TWEEN  from "https://cdn.jsdelivr.net/npm/es6-tween";
 // import TWEEN from "https://cdn.jsdelivr.net/npm/tween@0.9.0/tween.min.js";
+//import { WireframeGeometry2 } from './jsm/lines/WireframeGeometry2.js';
 import Scene from "../lib/scene.js";
 import HtmlObject3D from "../lib/htmlObject3d.js";
 
@@ -68,9 +69,62 @@ export default class BlockchainModel extends Scene {
         let fibersObj3d = this.getFibersObj3d()
         blockchainModelObject3d.add(fibersObj3d);
 
+
+
+
+        let filmCanvas = this.getPhotonCanvas()
+        let texture = new THREE.Texture(filmCanvas);
+        texture.needsUpdate = true;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(10, 1);
+
+        let material = new THREE.MeshBasicMaterial({
+            map: texture,
+            //linewidth: 5,
+            transparent: true,
+            color: 0xe0e0e0
+
+        });
+        let newTargetPos = new THREE.Vector2(-1, 0);
+        new TWEEN.Tween(texture.offset).easing(TWEEN.Easing.Linear.None).to(newTargetPos, 1000).start().repeat(Infinity)
+
+        let geo = new THREE.SphereGeometry(5000, 4, 3);
+
+        var wireframe = new THREE.WireframeGeometry( geo );
+        const vectorArray = wireframe.attributes.position.array;
+
+        for (let i = 0; i < vectorArray.length; i += 6) {
+            let points = []
+            points.push(new THREE.Vector3(vectorArray[i], vectorArray[i + 1], vectorArray[i + 2]))
+            points.push(new THREE.Vector3(vectorArray[i + 3], vectorArray[i + 4], vectorArray[i + 5]))
+
+            let curve = new THREE.CatmullRomCurve3(points);
+            let tubeGeometry = new THREE.TubeGeometry(curve, 100, 2, 8, false);
+            let tubeMesh = new THREE.Mesh(tubeGeometry, material);
+            this.scene.add(tubeMesh);
+        }
+        // Add a callouts
+
+        // blockchain.html
+        this.scene.add(await this.createPositionLabels( './blockchain.html', new THREE.Vector3( 0, 200, 0), Math.PI / 4 ))
+
+
         return blockchainModelObject3d
 
 
+    }
+
+    async createPositionLabels ( url, position, rad) {
+        const doc = await fetch( url ).then(response => response.text())
+        let obj3d = new HtmlObject3D(doc, this.fonts, this.calloutProps)
+        obj3d.translateX(position.x);
+        obj3d.translateY(position.y);
+        obj3d.translateZ(position.z);
+        let quaternion = new THREE.Quaternion().setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), rad );
+        //obj3d.quaternion.copy(quaternion)
+        this.selectableMeshArr.push(obj3d.backgroundMesh)
+        return obj3d
     }
 
     async getBlockchainFilm(tet) {
@@ -255,26 +309,20 @@ export default class BlockchainModel extends Scene {
         reelObj3d.add(reelMesh2)
 
         //  TODO
+        let quaternion = new THREE.Quaternion();
 
-        let reelTween = new TWEEN.Tween().to(null, 1000);
-        reelTween.easing(TWEEN.Easing.Quartic.InOut);//Quartic.InOut Sinusoidal.InOut
+        let reelTween = new TWEEN.Tween().to(null, 4000);
+        reelTween.easing(TWEEN.Easing.Linear.None);//Quartic.InOut Sinusoidal.InOut
         reelTween.onUpdate(i => {
-            let rad = 2 * Math.PI / 14
-            reelObj3d.rotationZ = i * rad
-            //reelMesh.rotation.z = i * Math.PI * 2 / 3
-            //reelObj3d.rotateY = rad * Math.PI /4
-            //reelObj3d.rotateY += 0.01
-            //reelObj3d.updateMatrix()
-            //reelObj3d.matrixWorldNeedsUpdate
+            let rad = 2 * Math.PI / 3
+            let rotationZ = i * -rad
+            quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), rotationZ );
+            reelObj3d.quaternion.copy(quaternion)
         });
         reelTween.repeat(Infinity); // repeats forever
         reelTween.start();
 
-        // Add a callout
-        const htmlDoc = await this.importHtml("./blockchain.html")
-        let labelObj3d = new HtmlObject3D(htmlDoc, this.fonts, this.calloutProps)
-        labelObj3d.translateY(200);
-        reelObj3d.add(labelObj3d);
+
 
         return reelObj3d
 
