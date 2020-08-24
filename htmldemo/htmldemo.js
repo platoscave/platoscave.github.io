@@ -78,6 +78,95 @@ export default class HTMLDemo extends Scene {
         labelObj3d5.key = 'accounts'
         this.selectableMeshArr.push(labelObj3d5.backgroundMesh)
 
+
+
+
+        // as xml
+        var parser = new DOMParser();
+        var node = parser.parseFromString('<p xmlns="http://www.w3.org/1999/xhtml" style="color: red">foo</p>', 'text/xml').firstChild;
+        console.log('color', node.style.color)
+
+
+        // fetch
+        const fullDoc = await fetch('./fullDoc.html').then(response => response.text())
+        var parser = new DOMParser();
+        var node = parser.parseFromString(fullDoc, 'text/html');
+        console.log('node', node)
+        let h1El = node.querySelectorAll('h1');
+        console.log('h1El', h1El[0])
+        //console.log(window.getComputedStyle(h1El[0], null))
+        //console.log('color', node.style.color)
+        var head  = node.getElementsByTagName('head')[0];
+        var link  = node.createElement('link');
+        link.rel  = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'mystyle.css';
+        link.onload = function() { 
+            head.appendChild(link);
+        }
+
+        console.log(window.getComputedStyle(h1El[0], null))
+
+
+
+
+
+        // https://stackoverflow.com/questions/25724166/acessing-the-render-tree
+        var xhttp = new XMLHttpRequest();
+        xhttp.responseType = 'document';
+        /* xhttp.onreadystatechange = function(e) {
+            if (this.readyState == 4 && this.status == 200) {
+                var document = e.target.response;
+                var h2headings = document.querySelectorAll('h1');
+                console.log(h2headings[0])
+                console.log(window.getComputedStyle(h2headings[0], null))//htmlDoc.getComputedStyle
+            }
+        }; */
+        xhttp.onload = function() {
+            console.log(this.responseXML.title);
+            var h2headings = this.responseXML.querySelectorAll('h1');
+            console.log('new XMLHttpRequest()')
+            console.log(h2headings[0])
+            console.log(window.getComputedStyle(h2headings[0], null))//htmlDoc.getComputedStyle
+          }
+        xhttp.open("GET", "./test.html", true);
+        xhttp.send();
+
+        /* var domfile = Services.appShell.hiddenDOMWindow.File('./test.html');
+        console.log(domfile) */
+
+        /* let win2 = window.open("about:blank","",
+        "width=600,height=100%,scrollbars=0,resizable=0,toolbar=0,location=0,menubar=0,status=0,directories=0");
+        win2.blur();
+        window.focus()
+        win2.document.location.href='./test.html'; */
+
+
+        var htmlText= '<h1 style="color: red">foo</h1><';
+        var divEl = document.createElement("div")
+        divEl.innerHTML = htmlText
+        //let header = temp.getElementBy("header")
+        console.log('document.createElement("div")')
+        console.log(divEl)
+        console.log(window.getComputedStyle(divEl.firstChild, null))
+        console.log('color', divEl.firstChild.style.color)
+
+
+        var doc = document.cloneNode();
+
+        doc.appendChild(doc.createElement('html'));
+        let head1 = doc.createElement('head')
+        doc.documentElement.appendChild(head1);
+        head1.innerHTML += '<link rel="stylesheet" href="mystyle.css" type="text/css"/>';
+        let body = doc.createElement('body')
+        doc.documentElement.appendChild(body);
+        body.appendChild(doc.createElement('h1'));
+
+        console.log('document.cloneNode()')
+        console.log(body)
+        console.log(window.getComputedStyle(body.firstChild, null))
+
+
     }
 
 
