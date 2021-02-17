@@ -132,8 +132,10 @@ export default class HTMLDemo extends Scene {
         xhttp.open("GET", "./test.html", true);
         xhttp.send();
 
-        /* var domfile = Services.appShell.hiddenDOMWindow.File('./test.html');
-        console.log(domfile) */
+        //var domfile = Services.appShell.hiddenDOMWindow.File('./test.html');
+        /* var hiddenWindow = Components.classes["@mozilla.org/appshell/appShellService;1"].getService(Components.interfaces.nsIAppShellService).hiddenDOMWindow;
+        hiddenWindow.document.location = './test.html';
+        console.log(hiddenWindow)  */
 
         /* let win2 = window.open("about:blank","",
         "width=600,height=100%,scrollbars=0,resizable=0,toolbar=0,location=0,menubar=0,status=0,directories=0");

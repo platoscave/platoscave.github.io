@@ -35,7 +35,7 @@ export default class BlockchainModel extends Scene {
         const pipeMaterial = new THREE.MeshPhongMaterial({ color: 0xe0e0e0 });
         let chestahedronGeom = this.makeChestahedronGeom()
         let chestahedronMesh = new THREE.Mesh(chestahedronGeom, pipeMaterial)
-        chestahedronMesh.position.set(0, HEIGHT * 5, 0)
+        //chestahedronMesh.position.set(0, HEIGHT * 5, 0)
         let chestTween = new TWEEN.Tween().to(null, 10000);
         chestTween.easing(TWEEN.Easing.Quartic.InOut);//Quartic.InOut Sinusoidal.InOut
         chestTween.onUpdate(rad => {
@@ -46,8 +46,8 @@ export default class BlockchainModel extends Scene {
 
         this.scene.add(chestahedronMesh)
 
-        let bcNodeObject3D = new BCNodeObject3D(this.fonts, this.darkPageProps)
-        this.scene.add(bcNodeObject3D)
+/*         let bcNodeObject3D = new BCNodeObject3D(this.fonts, this.darkPageProps)
+        this.scene.add(bcNodeObject3D) */
 
 
         let filmCanvas = this.getPhotonCanvas()
@@ -67,7 +67,7 @@ export default class BlockchainModel extends Scene {
         let newTargetPos = new THREE.Vector2(-1, 0);
         new TWEEN.Tween(texture.offset).easing(TWEEN.Easing.Linear.None).to(newTargetPos,500).start().repeat(Infinity)
 
-        let geo = new THREE.SphereGeometry(10000, 4, 3);
+        let geo = new THREE.SphereGeometry(20000, 4, 3);
 
         var wireframe = new THREE.WireframeGeometry( geo );
         const vectorArray = wireframe.attributes.position.array;
@@ -76,7 +76,7 @@ console.log('wireframe',geo)
 
             let p1 = new THREE.Vector3(vectorArray[i], vectorArray[i + 1], vectorArray[i + 2])
             let p2 = new THREE.Vector3(vectorArray[i + 3], vectorArray[i + 4], vectorArray[i + 5])
-            let mesh = this.makeBeamMesh(p1, p2, 5) 
+            let mesh = this.makeBeamMesh(p1, p2, 3) 
             mesh.material = material
             this.scene.add(mesh);
 
@@ -87,32 +87,26 @@ console.log('wireframe',geo)
 
         for (let i = 0; i < verticesArr.length; i ++) {
 
-            var geometry = new THREE.PlaneGeometry(WIDTH * 2, HEIGHT * 2, 1, 1)
-            //geometry.translate( verticesArr[i].x, verticesArr[i].y, verticesArr[i].z)
-            //geometry.lookAt(new THREE.Vector3(0, 1, 0))
-            var material2 = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-            var box = new THREE.Mesh( geometry, material2 );
-            let node = new THREE.Object3D();
 
-            node.add( box );
-            node.position.set(verticesArr[i].x, verticesArr[i].y, verticesArr[i].z)
-            node.lookAt(0,0,0)
 
-            this.scene.add( node );
+            let bcNodeObject3D = new BCNodeObject3D(this.fonts, this.darkPageProps)
+            bcNodeObject3D.position.set(verticesArr[i].x, verticesArr[i].y, verticesArr[i].z)
+            //let quaternion = new THREE.Quaternion().setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), Math.PI / 2 );
+            //bcNodeObject3D.quaternion.copy(quaternion)
+            
+            //bcNodeObject3D.up = new THREE.Vector3( 0, -1, 0 )
+            //bcNodeObject3D.lookAt(0,0,0)
+            
+            //bcNodeObject3D.rotation.x += ( -Math.PI /2)
+
+            //this.selectableMeshArr.push(obj3d.backgroundMesh)
+
+
+            this.scene.add( bcNodeObject3D );
 
         }
         // Add a callouts
 
-        /* var geometry = new THREE.BoxPlaneGeometry( 500, 500, 500, 2, 2, 2 );
-        var material2 = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-        var box = new THREE.Mesh( geometry, material2 );
-        BufferGeometryUtils.computeTangents( box.geometry );
-        
-        var helper = new VertexNormalsHelper( box, 200, 0x00ff00, 1 );
-        var helper = new VertexTangentsHelper( box, 200, 0x00ff00, 1 );
-        
-        this.scene.add( box );
-        this.scene.add( helper ); */
 
 
 
